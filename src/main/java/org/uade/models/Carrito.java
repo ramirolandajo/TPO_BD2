@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 public class Carrito {
-
     private int idCarrito;
     private List<Producto> productos;
     private int cantidad;

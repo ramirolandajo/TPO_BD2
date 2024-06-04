@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 public class Usuario {
-
     private int idUsuario;
     private String nombreCompleto;
     private String documento;

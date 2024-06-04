@@ -8,11 +8,11 @@ import lombok.*;
 @Getter
 @Setter
 public class Pedido {
-
     private int idPedido;
     private List<Producto> productos;
+    private Usuario usuario;
+    private Double precioTotal;
     private String estado;
-    private int idUsuario;
 }
 
 

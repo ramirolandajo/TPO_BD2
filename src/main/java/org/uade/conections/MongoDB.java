@@ -8,7 +8,7 @@ import org.uade.exceptions.MongoConnectionException;
 public class MongoDB {
 
     private static MongoDB instancia;
-    private final String url ;
+    private final String url;
     private MongoClient mongoClient;
 
     private MongoDB() {
