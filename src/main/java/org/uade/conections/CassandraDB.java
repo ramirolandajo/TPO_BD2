@@ -1,5 +1,5 @@
 package org.uade.conections;
 
-public class PoolCassandra {
+public class CassandraDB {
 
 }

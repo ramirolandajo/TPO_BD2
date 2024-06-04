@@ -9,12 +9,10 @@ import lombok.*;
 @Setter
 public class Pedido {
 
-    private int id_pedido;
+    private int idPedido;
     private List<Producto> productos;
     private String estado;
-
-    public Pedido(Carrito carrito) {
-    }
+    private int idUsuario;
 }
 
 

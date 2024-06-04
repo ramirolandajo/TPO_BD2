@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 public class Carrito {
 
-    private int id_carrito;
+    private int idCarrito;
     private List<Producto> productos;
     private int cantidad;
     private Float precioTotal;

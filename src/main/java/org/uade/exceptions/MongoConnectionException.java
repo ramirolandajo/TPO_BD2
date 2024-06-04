@@ -1,10 +1,10 @@
 package org.uade.exceptions;
 
-public class ErrorConectionMongoException extends Exception {
+public class MongoConnectionException extends Exception {
 
     private static final long serialVersionUID = 601128023082493198L;
 
-    public ErrorConectionMongoException(String mensaje) {
+    public MongoConnectionException(String mensaje) {
         super(mensaje);
     }
 

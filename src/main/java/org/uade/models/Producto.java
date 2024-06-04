@@ -6,9 +6,9 @@ import lombok.*;
 @Getter
 @Setter
 public class Producto {
-    private int id_articulo;
+    private int idProducto;
     private String descripcion;
     private Double precio;
-    //private imagen
+    private String imagen;
     private String comentarios;
 }
