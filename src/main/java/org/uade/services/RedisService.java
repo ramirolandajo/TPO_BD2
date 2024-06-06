@@ -1,6 +1,6 @@
 package org.uade.services;
 
-import org.uade.conections.RedisDB;
+import org.uade.connections.RedisDB;
 import org.uade.exceptions.RedisConnectionException;
 import redis.clients.jedis.Jedis;
 
