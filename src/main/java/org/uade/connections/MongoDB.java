@@ -1,4 +1,4 @@
-package org.uade.conections;
+package org.uade.connections;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -22,9 +22,9 @@ public class MongoDB {
         return instancia;
     }
 
-    public MongoDatabase getConection(String database) throws MongoConnectionException {
+    public MongoDatabase getConnection() throws MongoConnectionException {
         try {
-            MongoDatabase db = mongoClient.getDatabase(database);
+            MongoDatabase db = mongoClient.getDatabase("tpo-bd2");
             return db;
         }
         catch (Exception e) {

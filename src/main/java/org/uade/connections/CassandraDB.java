@@ -1,4 +1,4 @@
-package org.uade.conections;
+package org.uade.connections;
 
 public class CassandraDB {
 

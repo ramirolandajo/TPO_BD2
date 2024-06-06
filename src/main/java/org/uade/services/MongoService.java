@@ -3,7 +3,7 @@ package org.uade.services;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import org.bson.conversions.*;
-import org.uade.conections.MongoDB;
+import org.uade.connections.MongoDB;
 import org.uade.exceptions.MongoConnectionException;
 import org.uade.models.*;
 
@@ -18,7 +18,7 @@ public class MongoService {
     private MongoCollection<Pedido> coleccionPedidos;
 
     private MongoService() throws MongoConnectionException {
-        this.database = MongoDB.getInstancia().getConection("mongoDatabaseTPO");
+        this.database = MongoDB.getInstancia().getConnection();
         this.coleccionProductos = database.getCollection("Productos", Producto.class);
         this.coleccionUsuarios  = database.getCollection("Usuarios", Usuario.class);
         this.coleccionPedidos   = database.getCollection("Pedidos", Pedido.class);

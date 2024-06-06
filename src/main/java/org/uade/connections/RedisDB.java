@@ -1,4 +1,4 @@
-package org.uade.conections;
+package org.uade.connections;
 
 import org.uade.exceptions.RedisConnectionException;
 import redis.clients.jedis.Jedis;
