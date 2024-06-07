@@ -5,16 +5,10 @@ import org.uade.exceptions.RedisConnectionException;
 import redis.clients.jedis.Jedis;
 
 public class RedisService {
-    private static RedisService instancia;
     private final Jedis database;
 
-    private RedisService() throws RedisConnectionException {
-        this.database = RedisDB.getInstancia().getConection();
-    }
-    public static RedisService getInstance() throws RedisConnectionException{
-        if(instancia == null)
-            instancia = new RedisService();
-        return instancia;
+    public RedisService() throws RedisConnectionException {
+        this.database = RedisDB.getInstancia().getConnection();
     }
 
     // Clase que se utiliza para ver la hora de inicio de sesion del usuario.

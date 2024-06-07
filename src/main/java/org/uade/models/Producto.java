@@ -6,11 +6,11 @@ import lombok.*;
 @Getter
 @Setter
 public class Producto {
+    public static int contadorId;
     private int idProducto;
     private String descripcion;
-    private Double precio;
-    private Double descuento;
-    private Double impuestoIVA;
+    private Float precio;
+    private Float descuento;
+    private Float impuestoIVA;
     private String imagen;
-    private String comentarios;
 }

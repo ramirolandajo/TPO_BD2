@@ -30,9 +30,9 @@ public class CassandraService {
                 + " float, imagenNueva text, comentariosNuevos text, tipoCambio text, operador int)" +
                 "VALUES (uuid(), "+ productoViejo.getIdProducto() + ", " + productoViejo.getDescripcion() + ", " +
                 productoViejo.getPrecio() + ", " + productoViejo.getDescuento() + ", " + productoViejo.getImpuestoIVA()
-                 + ", " + productoViejo.getImagen() + ", " + productoViejo.getComentarios() + ", " + productoNuevo.getDescripcion()
+                 + ", " + productoViejo.getImagen() + ", " + ", " + productoNuevo.getDescripcion()
                 + ", " + productoNuevo.getPrecio() + ", " + productoNuevo.getDescuento() + ", " + productoNuevo.getImpuestoIVA()
-                + ", " + productoNuevo.getImagen() + ", " + productoNuevo.getComentarios() + ", " + tipoCambio + ", " + operador
+                + ", " + productoNuevo.getImagen() + ", " +  ", " + tipoCambio + ", " + operador
                 + ")";
 
     }

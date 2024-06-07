@@ -15,13 +15,4 @@ public class Carrito {
     private Float descuento;
     private Date fechaCreacion;
     private boolean carritoCreado;
-
-
-    public Float getSubTotal(Float precio, Float descuento) {
-        if (descuento == null) {
-            // Por que le tengo q poner la f
-            descuento = 0.0f;
-        }
-        return precio - (precio * descuento / 100);
-    }
 }

@@ -1,34 +1,27 @@
 package org.uade;
 
 import org.uade.exceptions.MongoConnectionException;
-import org.uade.models.Carrito;
+import org.uade.exceptions.RedisConnectionException;
 import org.uade.models.Usuario;
 import org.uade.services.MongoService;
+import org.uade.services.RedisService;
 
-import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class App {
 
-    static MongoService mongo;
+    public static void main( String[] args ) throws MongoConnectionException, RedisConnectionException {
+        MongoService mongo = new MongoService();
+        RedisService redis = new RedisService();
 
-    static { // Controla excepciones al inicializar un atributo estático, en este caso la instancia de Mongo.
-        try {
-            mongo = MongoService.getInstancia();
-        } catch (MongoConnectionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void main( String[] args ) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido a tu tienda de deporte preferida!");
         System.out.println("Ingresa una opción:");
 
         System.out.println("1. Registrarse a la aplicación (si ingresas por primera vez)");
         System.out.println("2. Ingresar a la aplicación");
-        System.out.println("3. Ingreso administrador");
-        System.out.println("4. Salir");
+        System.out.println("3 Salir");
         int opcion = sc.nextInt();
 
         while (opcion != 1 && opcion != 2 && opcion != 3 && opcion != 4) {
@@ -57,13 +50,40 @@ public class App {
             }
         }
         else if (opcion == 2){
-            //metodos de usuario
+            System.out.print("Ingrese su DNI: ");
+            int doc = sc.nextInt();
+            while(doc < 1) {
+                System.out.println("Número no válido. Ingrese un número positivo!");
+                doc = sc.nextInt();
+            }if(doc == 1){
+                System.out.println("1.- Ver productos");
+                System.out.println("2.- Modificar producto");
+                System.out.println("3.- Agregar producto al catálogo");
+                System.out.println("4.- Ver log de cambios del catálogo");
+                System.out.println("5.- Ver las facturas");
+                System.out.println("0.- SALIR");
+                System.out.print("Ingrese una opción: ");
+                int opcionAdmin = sc.nextInt();
+
+                switch (opcionAdmin){
+                    case 1:
+                        mongo.recuperarCatalogo();
+                    case 2:
+                        System.out.print("Ingrese el producto que desea actualizar: ");
+                        int idProducto = sc.nextInt();
+                        mongo.modificarProducto(idProducto);
+                    case 3:
+                        mongo.agregarProductoAlCatalogo();
+                    case 4:
+
+                }
+            }
+            else{
+                System.out.println();
+            }
         }
-        else if (opcion == 3){
-            //metodos admin
-        }
-        else {
-            //exit
+        else{
+            System.out.println();
         }
     }
 }
