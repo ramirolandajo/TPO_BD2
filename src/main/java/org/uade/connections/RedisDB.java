@@ -19,12 +19,14 @@ public class RedisDB {
         return instancia;
     }
 
-    public Jedis getConection() throws RedisConnectionException {
+    public Jedis getConnection() throws RedisConnectionException {
         try {
             Jedis jedis = pool.getResource();
             return jedis;
         }
         catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             throw new RedisConnectionException("Error al conectarme a Redis");
         }
     }
