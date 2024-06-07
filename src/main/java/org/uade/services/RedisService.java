@@ -40,9 +40,9 @@ public class RedisService {
         System.out.println("Sesión cerrada con éxito!");
     }
 
-/*
-    public void agregarProductoCarrito(int idProducto, int cantidad){
-        database.hset("carrito:" + idCarrito, "producto" + )
+    /*
+    public void agregarProductoCarrito(String idCarrito){
+        database.sadd("carrito:" + idCarrito, )
     }
- */
+    */
 }

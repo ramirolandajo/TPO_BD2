@@ -151,7 +151,7 @@ public class MongoService {
         System.out.println("Ingrese el medio de pago: ");
         String medioDePago = sc.nextLine();
 
-        this.coleccionFacturas.insertOne(new Factura(++Factura.contadorId, idPedido, false, medioDePago));
+        this.coleccionFacturas.insertOne(new Factura(++Factura.contadorId, idPedido, false, medioDePago, (float) 0.0F));
     }
 
     public void recuperarFacturas() {

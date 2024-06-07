@@ -9,7 +9,6 @@ import org.uade.services.MongoService;
 import org.uade.services.RedisService;
 
 import java.util.Scanner;
-import java.util.Stack;
 
 public class App {
 
