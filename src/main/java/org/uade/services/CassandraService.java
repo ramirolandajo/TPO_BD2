@@ -34,6 +34,10 @@ public class CassandraService {
                 + ", " + productoNuevo.getPrecio() + ", " + productoNuevo.getDescuento() + ", " + productoNuevo.getImpuestoIVA()
                 + ", " + productoNuevo.getImagen() + ", " +  ", " + tipoCambio + ", " + operador
                 + ")";
+    }
 
+    public void verLogsCatalogo(){
+        String statement = "SELECT * FROM logCambiosProductos";
+        session.execute(statement);
     }
 }

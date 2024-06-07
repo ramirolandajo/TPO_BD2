@@ -14,13 +14,11 @@ public class CassandraDB {
         try {
             cluster = Cluster.builder().addContactPoints("127.0.0.1").build();
             session = cluster.connect("system");
-
-            session.execute("USE tpo_bd2");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-            throw new CassandraConnectionException("Error de conexion con cassandra");
+            throw new CassandraConnectionException("Error de conexión con Cassandra");
         }
     }
 
