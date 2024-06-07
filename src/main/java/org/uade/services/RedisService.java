@@ -4,30 +4,37 @@ import org.uade.connections.RedisDB;
 import org.uade.exceptions.RedisConnectionException;
 import redis.clients.jedis.Jedis;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class RedisService {
     private final Jedis database;
+    private LocalDateTime tiempoInicio;
 
     public RedisService() throws RedisConnectionException {
         this.database = RedisDB.getInstancia().getConnection();
     }
 
     // Clase que se utiliza para ver la hora de inicio de sesion del usuario.
-    public void iniciarSesion(String idUsuario){
-        Long tiempoInicio = System.currentTimeMillis();
-        this.database.hset(idUsuario, "Inicio", String.valueOf(tiempoInicio));
+    public void iniciarSesion(String idUsuario) {
+        tiempoInicio = LocalDateTime.now();
+        this.database.hset("usuario:"+idUsuario, "Inicio", String.valueOf(tiempoInicio));
     }
 
     // Clase que se utiliza para ver la hora de cerrado de sesion del usuario.
-    public void cerrarSesion(String idUsuario){
-        Long tiempoFin = System.currentTimeMillis();
-        this.database.hset(idUsuario, "Cerrado", String.valueOf(tiempoFin));
-    }
-
-    public Long tiempoDeSesion(String idUsuario){
-        Long tiempoInicio = Long.parseLong(database.hget(idUsuario, "Inicio"));
-        Long tiempoFin = Long.parseLong(database.hget(idUsuario, "Cerrado"));
-
-        return tiempoFin-tiempoInicio;
+    public void cerrarSesion(String idUsuario) {
+        Duration duration = Duration.between(tiempoInicio, LocalDateTime.now());
+        String categorizacion;
+        if ((duration.getSeconds() / 60) >= 240) {
+            categorizacion = "TOP";
+        }
+        else if ((duration.getSeconds() / 60) >= 120 && (duration.getSeconds() / 60) < 240) {
+            categorizacion = "MEDIUM";
+        }
+        else {
+            categorizacion = "LOW";
+        }
+        this.database.hset("usuario:"+idUsuario, "Categorizacion: ", categorizacion);
     }
 
     /*

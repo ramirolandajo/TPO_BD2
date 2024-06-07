@@ -3,6 +3,7 @@ package org.uade.services;
 import com.datastax.driver.core.Session;
 import org.uade.connections.CassandraDB;
 import org.uade.exceptions.CassandraConnectionException;
+import org.uade.models.Factura;
 import org.uade.models.Producto;
 
 public class CassandraService {
@@ -14,8 +15,6 @@ public class CassandraService {
         this.cassandraDB = new CassandraDB();
         this.session = this.cassandraDB.getSession();
 
-        session.execute("CREATE KEYSPACE IF NOT EXISTS tpo_bd2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-        session.execute("USE tpo_bd2");
     }
 
     public void logCambiosProducto(Producto productoViejo, Producto productoNuevo, String tipoCambio, int operador) {
@@ -35,5 +34,11 @@ public class CassandraService {
                 + ", " + productoNuevo.getImagen() + ", " +  ", " + tipoCambio + ", " + operador
                 + ")";
 
+        session.execute(cqlStatement);
+    }
+
+    public void logFacturas(Factura factura, String dniUsuario) {
+        session.execute("CREATE TABLE IF NOT EXISTS logFacturas(idLog uuid, idFactura int, facturaPagada boolean, " +
+                "formaPago text, operador text, fecha_hora timestamp, monto float, PRIMARY KEY (idLog, fecha_hora))");
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Usuario {
-    private String documento;
+    private String dni;
     private String nombreCompleto;
     private String direccion;
     private Float cuentaCorriente;

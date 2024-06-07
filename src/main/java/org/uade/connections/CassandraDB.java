@@ -15,6 +15,7 @@ public class CassandraDB {
             cluster = Cluster.builder().addContactPoints("127.0.0.1").build();
             session = cluster.connect("system");
 
+            session.execute("CREATE KEYSPACE IF NOT EXISTS tpo_bd2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
             session.execute("USE tpo_bd2");
         }
         catch (Exception e) {

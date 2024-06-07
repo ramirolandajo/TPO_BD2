@@ -10,4 +10,5 @@ public class Factura {
     private int idFactura;
     private boolean facturaPagada;
     private String formaPago;
+    private Float monto;
 }
