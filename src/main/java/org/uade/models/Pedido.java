@@ -1,18 +1,23 @@
 package org.uade.models;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Map;
 
-import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Pedido {
+    public static int contadorId = 0;
+
     private int idPedido;
     private Map<Producto, Integer> productos;
     private Usuario usuario;
-    private Double precioTotal;
+    private float precioTotal;
 }
 
 

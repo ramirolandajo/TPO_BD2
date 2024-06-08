@@ -7,10 +7,11 @@ import lombok.*;
 @Getter
 @Setter
 public class Factura {
-    public static int contadorId;
+    public static int contadorId = 0;
+
     private int idFactura;
     private int idPedido;
     private boolean facturaPagada;
     private String formaPago;
-    private Float monto;
+    private float monto;
 }

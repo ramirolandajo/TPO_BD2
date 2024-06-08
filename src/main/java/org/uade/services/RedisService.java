@@ -1,12 +1,10 @@
 package org.uade.services;
 
 import com.mongodb.client.model.Filters;
-import jdk.vm.ci.meta.Local;
 import org.uade.connections.RedisDB;
 import org.uade.exceptions.CassandraConnectionException;
 import org.uade.exceptions.MongoConnectionException;
 import org.uade.exceptions.RedisConnectionException;
-import org.uade.models.Carrito;
 import org.uade.models.Producto;
 import redis.clients.jedis.Jedis;
 
@@ -52,7 +50,7 @@ public class RedisService {
         this.database.hset("carrito:"+idUsuario, String.valueOf(idProducto), String.valueOf(cantidad));
     }
 
-    public Map<Producto, Integer> recuperarCarrito(String idUsuario) throws MongoConnectionException, CassandraConnectionException {
+    public Map<Producto, Integer> recuperarCarrito(String idUsuario) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
         Map<String, String> carritoUsuario = this.database.hgetAll("carrito:"+idUsuario);
 
         MongoService mongoService = new MongoService();
