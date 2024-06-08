@@ -49,5 +49,8 @@ public class MongoDB {
         }
     }
 
+    public void close() {
+        mongoClient.close();
+    }
 }
 

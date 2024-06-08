@@ -139,4 +139,9 @@ public class RedisService {
             System.out.printf("%d. Producto: %s - Cantidad: %d\n", aux, producto, cantidad);
         }
     }
+
+    public void close() {
+        this.database.close();
+        RedisDB.getInstancia().closeConnection();
+    }
 }

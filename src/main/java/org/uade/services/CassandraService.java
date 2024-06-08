@@ -74,4 +74,8 @@ public class CassandraService {
         String statement = "SELECT * FROM logFacturas";
         session.execute(statement);
     }
-}
+
+    public void close() {
+        cassandraDB.close();
+    }
+ }

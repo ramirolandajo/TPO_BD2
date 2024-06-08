@@ -283,4 +283,8 @@ public class MongoService {
             System.out.println();
         }
     }
+
+    public void close() {
+        MongoDB.getInstancia().close();
+    }
 }

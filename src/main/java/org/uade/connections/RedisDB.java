@@ -30,4 +30,8 @@ public class RedisDB {
             throw new RedisConnectionException("Error al conectarme a Redis");
         }
     }
+
+    public void closeConnection() {
+        this.pool.close();
+    }
 }
