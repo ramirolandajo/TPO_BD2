@@ -70,13 +70,13 @@ public class App {
         // Opciones Administrador
         else if (opcion == 2) {
             System.out.print("Ingrese su DNI: ");
-            int doc = sc.nextInt();
-            while (doc < 1) {
+            String doc = sc.nextLine();
+            while (Integer.parseInt(doc) < 1) {
                 System.out.println("Número no válido. Ingrese un número positivo!");
-                doc = sc.nextInt();
+                doc = sc.nextLine();
 
             }
-            if (doc == 1) {
+            if (Integer.parseInt(doc) == 1) {
                 System.out.println("Bienvenido al menú de Administrador!");
                 System.out.println("\n1.- Ver productos");
                 System.out.println("2.- Modificar producto");
@@ -99,15 +99,15 @@ public class App {
                         mongo.agregarProductoAlCatalogo();
                     case 4:
                         cassandra.verLogsCatalogo();
-                    case 6:
-                        mongo.recuperarFacturasUsuario();
+                    case 5:
+                        cassandra.verLogFacturas();
                     case 0:
                         break;
                 }
             }
             // Opciones usuario comun
             else {
-                redis.iniciarSesion(String.valueOf(doc));
+                redis.iniciarSesion(doc);
                 System.out.println("Bienvenido al menú de Cliente");
                 System.out.println("\n1.- Ver productos");
                 System.out.println("2.- Agregar producto al carrito");
@@ -143,8 +143,19 @@ public class App {
                             //TODO
                             System.out.println();
                             break;
+                        case 5:
+                            //TODO
+                            System.out.println();
+                            break;
+                        case 6:
+                            mongo.recuperarFacturasUsuario(doc);
+                            break;
+                        case 7:
+                            //TODO
+                            System.out.println();
+                            break;
                         case 0:
-                            redis.cerrarSesion(String.valueOf(doc));
+                            redis.cerrarSesion(doc);
                             break;
                         default:
                             break;
