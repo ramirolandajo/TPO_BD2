@@ -1,8 +1,12 @@
 package org.uade.connections;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.uade.exceptions.MongoConnectionException;
 
 public class MongoDB {
@@ -13,6 +17,7 @@ public class MongoDB {
 
     private MongoDB() {
         url = "mongodb://127.0.01:27017";
+
         mongoClient = MongoClients.create(url);
     }
 
@@ -24,7 +29,13 @@ public class MongoDB {
 
     public MongoDatabase getConnection() throws MongoConnectionException {
         try {
-            MongoDatabase db = mongoClient.getDatabase("tpo-bd2");
+            PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+
+            CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(
+                    MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(pojoCodecProvider));
+
+
+            MongoDatabase db = mongoClient.getDatabase("tpo-bd2").withCodecRegistry(pojoCodecRegistry);
             return db;
         }
         catch (Exception e) {

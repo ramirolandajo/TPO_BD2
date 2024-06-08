@@ -26,16 +26,20 @@ public class MongoService {
     private MongoCollection<Usuario> coleccionUsuarios;
     private MongoCollection<Pedido> coleccionPedidos;
     private MongoCollection<Factura> coleccionFacturas;
-    CassandraService cassandraDatabase = new CassandraService();
-    Scanner sc = new Scanner(System.in);
-    RedisService redisService = new RedisService();
 
-    public MongoService() throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
+    private CassandraService cassandraService;
+    private RedisService redisService ;
+
+    Scanner sc = new Scanner(System.in);
+
+    public MongoService(CassandraService cassandraService, RedisService redisService) throws MongoConnectionException{
         this.database = MongoDB.getInstancia().getConnection();
         this.coleccionProductos = database.getCollection("Productos", Producto.class);
         this.coleccionUsuarios = database.getCollection("Usuarios", Usuario.class);
         this.coleccionPedidos = database.getCollection("Pedidos", Pedido.class);
         this.coleccionFacturas = database.getCollection("Facturas", Factura.class);
+        this.cassandraService = cassandraService;
+        this.redisService = redisService;
     }
 
     public void agregarUsuario(Usuario usuario) {
@@ -144,7 +148,7 @@ public class MongoService {
         int idOperador = sc.nextInt();
 
         // Se logea el cambio del catálogo en Cassandra.
-        cassandraDatabase.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
+        cassandraService.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
 
         System.out.println("Producto actualizado!");
         System.out.println(productoActualizado.getIdProducto() + " " + productoActualizado.getDescripcion() + " " + productoActualizado.getPrecio() + " " + productoActualizado.getImpuestoIVA() + " " + productoActualizado.getDescuento() + " " + productoActualizado.getImagen());

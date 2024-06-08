@@ -12,8 +12,10 @@ public class CassandraService {
 
     private final CassandraDB cassandraDB;
     private final Session session;
+    private MongoService mongoService;
 
-    public CassandraService() throws CassandraConnectionException {
+    public CassandraService(MongoService mongoService) throws CassandraConnectionException {
+        this.mongoService = mongoService;
         this.cassandraDB = new CassandraDB();
         this.session = this.cassandraDB.getSession();
 
@@ -29,37 +31,34 @@ public class CassandraService {
                 + "descripcionVieja text, precioViejo float, descuentoViejo float, impuestoIvaViejo float, imagenVieja text, "
                 + "comentariosViejos text, descripcionNueva text, precioNuevo float, descuentoNuevo float, impuestoIvaNuevo"
                 + " float, imagenNueva text, comentariosNuevos text, tipoCambio text, operador int)" +
-                "VALUES (uuid(), "+ productoViejo.getIdProducto() + ", " + productoViejo.getDescripcion() + ", " +
+                "VALUES (uuid(), " + productoViejo.getIdProducto() + ", " + productoViejo.getDescripcion() + ", " +
                 productoViejo.getPrecio() + ", " + productoViejo.getDescuento() + ", " + productoViejo.getImpuestoIVA()
-                 + ", " + productoViejo.getImagen() + ", " + ", " + productoNuevo.getDescripcion()
+                + ", " + productoViejo.getImagen() + ", " + ", " + productoNuevo.getDescripcion()
                 + ", " + productoNuevo.getPrecio() + ", " + productoNuevo.getDescuento() + ", " + productoNuevo.getImpuestoIVA()
-                + ", " + productoNuevo.getImagen() + ", " +  ", " + tipoCambio + ", " + operador
+                + ", " + productoNuevo.getImagen() + ", " + ", " + tipoCambio + ", " + operador
                 + ")";
 
         session.execute(cqlStatement);
     }
 
-    public void verLogsCatalogo(){
+    public void verLogsCatalogo() {
         String statement = "SELECT * FROM logCambiosProductos";
         session.execute(statement);
     }
 
-    public void logFacturas(Factura factura) throws MongoConnectionException, CassandraConnectionException {
+    public void logFactura(Factura factura) throws MongoConnectionException, CassandraConnectionException {
         session.execute("CREATE TABLE IF NOT EXISTS logFacturas(idLog uuid, idFactura int, idPedidoReferencia int, "
-                +"idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
+                + "idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
                 " monto float, PRIMARY KEY (idLog, fecha_hora))");
 
-        MongoService mongoService = new MongoService();
         Pedido pedidoReferencia = mongoService.recuperarPedido(factura.getIdPedido());
 
         String operador;
         if (factura.getFormaPago().equals("efectivo")) {
             operador = "Empleado delivery (contra entrega)";
-        }
-        else if (factura.getFormaPago().equals("punto_retiro")) {
+        } else if (factura.getFormaPago().equals("punto_retiro")) {
             operador = "Empleado local";
-        }
-        else {
+        } else {
             operador = null;
         }
         String cqlStatement = "INSERT INTO TABLE logFacturas(idLog, idFactura, idPedidoReferencia, idUsuario, " +
