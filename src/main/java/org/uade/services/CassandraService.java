@@ -4,6 +4,7 @@ import com.datastax.driver.core.Session;
 import org.uade.connections.CassandraDB;
 import org.uade.exceptions.CassandraConnectionException;
 import org.uade.exceptions.MongoConnectionException;
+import org.uade.exceptions.RedisConnectionException;
 import org.uade.models.Factura;
 import org.uade.models.Pedido;
 import org.uade.models.Producto;
@@ -12,11 +13,12 @@ public class CassandraService {
 
     private final CassandraDB cassandraDB;
     private final Session session;
+    MongoService mongoService;
 
-    public CassandraService() throws CassandraConnectionException {
+    public CassandraService(MongoService mongo) throws CassandraConnectionException, MongoConnectionException, RedisConnectionException {
         this.cassandraDB = new CassandraDB();
         this.session = this.cassandraDB.getSession();
-
+        this.mongoService = mongo;
     }
 
     public void logCambiosProducto(Producto productoViejo, Producto productoNuevo, String tipoCambio, int operador) {
@@ -44,12 +46,11 @@ public class CassandraService {
         session.execute(statement);
     }
 
-    public void logFacturas(Factura factura) throws MongoConnectionException, CassandraConnectionException {
+    public void logFacturas(Factura factura){
         session.execute("CREATE TABLE IF NOT EXISTS logFacturas(idLog uuid, idFactura int, idPedidoReferencia int, "
                 +"idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
                 " monto float, PRIMARY KEY (idLog, fecha_hora))");
 
-        MongoService mongoService = new MongoService();
         Pedido pedidoReferencia = mongoService.recuperarPedido(factura.getIdPedido());
 
         String operador;
@@ -69,5 +70,10 @@ public class CassandraService {
                 + ", toTimestamp(now()), " + factura.getMonto() + ")";
 
         session.execute(cqlStatement);
+    }
+
+    public void verLogFacturas(){
+        String statement = "SELECT * FROM logFacturas";
+        session.execute(statement);
     }
 }

@@ -14,10 +14,16 @@ import java.util.Scanner;
 
 public class App {
 
+    public static MongoService mongo;
+    public static RedisService redis;
+    public static CassandraService cassandra;
+
     public static void main(String[] args) throws MongoConnectionException, RedisConnectionException, CassandraConnectionException {
-        MongoService mongo = new MongoService();
-        RedisService redis = new RedisService();
-        CassandraService cassandra = new CassandraService();
+        mongo = new MongoService(null, null);
+        redis = new RedisService(mongo);
+            cassandra = new CassandraService(mongo);
+
+        mongo = new MongoService(redis, cassandra);
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido a tu tienda de deporte preferida!");
@@ -151,8 +157,7 @@ public class App {
                             mongo.recuperarFacturasUsuario(doc);
                             break;
                         case 7:
-                            //TODO
-                            System.out.println();
+                            mongo.pagarFactura();
                             break;
                         case 0:
                             redis.cerrarSesion(doc);
@@ -160,6 +165,7 @@ public class App {
                         default:
                             break;
                     }
+
                     System.out.println("\n1.- Ver productos");
                     System.out.println("2.- Agregar producto al carrito");
                     System.out.println("3.- Eliminar producto del carrito");

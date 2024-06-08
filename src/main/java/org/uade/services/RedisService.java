@@ -16,9 +16,11 @@ import java.util.Map;
 public class RedisService {
     private final Jedis database;
     private LocalDateTime tiempoInicio;
+    MongoService mongoService;
 
-    public RedisService() throws RedisConnectionException {
+    public RedisService(MongoService mongo) throws RedisConnectionException, MongoConnectionException, CassandraConnectionException {
         this.database = RedisDB.getInstancia().getConnection();
+        this.mongoService = mongo;
     }
 
     // Clase que se utiliza para ver la hora de inicio de sesion del usuario.
@@ -50,10 +52,8 @@ public class RedisService {
         this.database.hset("carrito:"+idUsuario, String.valueOf(idProducto), String.valueOf(cantidad));
     }
 
-    public Map<Producto, Integer> recuperarCarrito(String idUsuario) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
+    public Map<Producto, Integer> recuperarCarrito(String idUsuario){
         Map<String, String> carritoUsuario = this.database.hgetAll("carrito:"+idUsuario);
-
-        MongoService mongoService = new MongoService();
 
         Map<Producto, Integer> itemsCarrito = new HashMap<>();
 

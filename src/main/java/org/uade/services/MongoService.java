@@ -26,16 +26,18 @@ public class MongoService {
     private MongoCollection<Usuario> coleccionUsuarios;
     private MongoCollection<Pedido> coleccionPedidos;
     private MongoCollection<Factura> coleccionFacturas;
-    CassandraService cassandraDatabase = new CassandraService();
+    CassandraService cassandraService;
     Scanner sc = new Scanner(System.in);
-    RedisService redisService = new RedisService();
+    RedisService redisService;
 
-    public MongoService() throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
+    public MongoService(RedisService redis, CassandraService cassandra) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
         this.database = MongoDB.getInstancia().getConnection();
         this.coleccionProductos = database.getCollection("Productos", Producto.class);
         this.coleccionUsuarios = database.getCollection("Usuarios", Usuario.class);
         this.coleccionPedidos = database.getCollection("Pedidos", Pedido.class);
         this.coleccionFacturas = database.getCollection("Facturas", Factura.class);
+        this.redisService = redis;
+        this.cassandraService = cassandra;
     }
 
     public void agregarUsuario(Usuario usuario) {
@@ -144,7 +146,7 @@ public class MongoService {
         int idOperador = sc.nextInt();
 
         // Se logea el cambio del catálogo en Cassandra.
-        cassandraDatabase.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
+        cassandraService.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
 
         System.out.println("Producto actualizado!");
         System.out.println(productoActualizado.getIdProducto() + " " + productoActualizado.getDescripcion() + " " + productoActualizado.getPrecio() + " " + productoActualizado.getImpuestoIVA() + " " + productoActualizado.getDescuento() + " " + productoActualizado.getImagen());
@@ -188,7 +190,7 @@ public class MongoService {
         return null;
     }
 
-    public void generarFactura(Pedido pedido, float totalIVA) throws MongoConnectionException, CassandraConnectionException {
+    public Factura generarFactura(Pedido pedido, float totalIVA) throws MongoConnectionException, CassandraConnectionException {
         // le pide directamente el medio de pago aunque sea que acaba de confirmar el carrito?
         System.out.println("Ingrese el medio de pago: ");
         System.out.println("1. Para abonar en efectivo");
@@ -235,18 +237,55 @@ public class MongoService {
         Factura factura = new Factura();
         factura.setIdFactura(++Factura.contadorId);
         factura.setIdPedido(pedido.getIdPedido());
+        factura.setIdUsuario(usuario.getDni());
         factura.setFacturaPagada(false);
         factura.setFormaPago(formaPago);
         factura.setMonto(montoFactura);
 
         this.coleccionFacturas.insertOne(factura);
+
+        return factura;
+    }
+
+    public void pagarFactura(){
+        System.out.println("Ingrese el id de la factura que desea pagar");
+        int idFactura = sc.nextInt();
+
+        while(idFactura < 1){
+            System.out.println("El Id debe ser positivo! Vuelva a intentarlo");
+            idFactura = sc.nextInt();
+        }
+
+        Factura facturaUsuario = this.recuperarFactura(idFactura);
+
+        if(facturaUsuario != null){
+            Usuario usuario = this.recuperarUsuario(facturaUsuario.getIdUsuario());
+
+            if((usuario.getCuentaCorriente() - facturaUsuario.getMonto()) > 0){
+                facturaUsuario.setFacturaPagada(true);
+                usuario.setCuentaCorriente(usuario.getCuentaCorriente() - facturaUsuario.getMonto());
+            }
+
+        }else
+            System.out.println("La factura no se encuentra registrada en la base de datos!");
+    }
+
+    public Factura recuperarFactura(int idFactura){
+        Bson filter = Filters.eq("idFactura", idFactura);
+
+        Iterable<Factura> facturasUsuario = this.coleccionFacturas.find(filter);
+        for(Factura fac : facturasUsuario){
+            return fac;
+        }
+        return null;
     }
 
     public void recuperarFacturasUsuario(String idUsuario) {
-        Iterable<Factura> facturas = this.coleccionFacturas.find();
+        Bson filter = Filters.eq("idUsuario", idUsuario);
+
+        Iterable<Factura> facturas = this.coleccionFacturas.find(filter);
         for (Factura fac : facturas) {
-            System.out.println(fac.getIdFactura() + " " + fac.isFacturaPagada() + " " + fac.getFormaPago());
-            System.out.println();
+            System.out.printf("%d %d %s %b %s %f", fac.getIdFactura(), fac.getIdPedido(), fac.getIdUsuario(), fac.isFacturaPagada(), fac.getFormaPago(), fac.getMonto());
         }
     }
 }
