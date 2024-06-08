@@ -12,6 +12,7 @@ import redis.clients.jedis.Jedis;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class RedisService {
     private final Jedis database;
     private LocalDateTime tiempoInicio;
     private MongoService mongoService;
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in).useLocale(Locale.US);
 
 
     public RedisService(MongoService mongoService) throws RedisConnectionException{

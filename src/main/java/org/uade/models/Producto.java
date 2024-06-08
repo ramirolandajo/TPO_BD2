@@ -1,16 +1,19 @@
 package org.uade.models;
 
-import lombok.*;
-import org.bson.codecs.pojo.annotations.BsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Producto {
+    @BsonIgnore
     public static int contadorId = 0;
 
-    @BsonProperty
     private int idProducto;
     private String descripcion;
     private float precio;

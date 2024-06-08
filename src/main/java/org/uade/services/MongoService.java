@@ -7,10 +7,7 @@ import org.uade.connections.MongoDB;
 import org.uade.exceptions.*;
 import org.uade.models.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class MongoService {
     private final MongoDatabase database;
@@ -22,7 +19,7 @@ public class MongoService {
     private CassandraService cassandraService;
     private RedisService redisService ;
 
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in).useLocale(Locale.US);
 
     public MongoService(CassandraService cassandraService, RedisService redisService) throws MongoConnectionException{
         this.database = MongoDB.getInstancia().getConnection();
@@ -50,22 +47,27 @@ public class MongoService {
     public void agregarProductoAlCatalogo() {
         System.out.println("Ingrese los datos a del producto nuevo: ");
 
-        System.out.println("\nDescripción: ");
+        System.out.println("Descripción: ");
         String descripcion = sc.nextLine();
 
         System.out.println("Precio: ");
         float precio = sc.nextFloat();
+        sc.nextLine();
 
         System.out.println("Descuento: ");
         float descuento = sc.nextFloat();
+        sc.nextLine();
 
         System.out.println("Impuesto de IVA: ");
         float impuestoIVA = sc.nextFloat();
+        sc.nextLine();
 
         System.out.println("Imagen: ");
         String imagen = sc.nextLine();
 
-        this.coleccionProductos.insertOne(new Producto(++Producto.contadorId, descripcion, precio, descuento, impuestoIVA, imagen));
+        int idProducto = ++Producto.contadorId;
+        System.out.println("ID: " + idProducto);
+        this.coleccionProductos.insertOne(new Producto(idProducto, descripcion, precio, descuento, impuestoIVA, imagen));
         System.out.println("Producto agregado al catalogo con éxito!");
     }
 
@@ -78,10 +80,12 @@ public class MongoService {
 
     public void recuperarCatalogo() {
         FindIterable<Producto> productos = coleccionProductos.find();
+        System.out.printf("%-5s %-25s %-15s %-10s %-15s %-10s\n", "ID", "DESCRIPCION", "PRECIO", "IVA", "DESCUENTO", "IMAGEN");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
         for (Producto p : productos) {
-            System.out.println(p.getIdProducto() + " " + p.getDescripcion() + " " + p.getPrecio() +
-                    " " + p.getImpuestoIVA() + " " + p.getDescuento() + " " + p.getImagen());
-            System.out.println();
+            System.out.printf("%-5d %-25s %-15.2f %-10.2f %-10.2f %-10s\n",
+                    p.getIdProducto(), p.getDescripcion(), p.getPrecio(), p.getImpuestoIVA(), p.getDescuento(),
+                    p.getImagen());
         }
     }
 

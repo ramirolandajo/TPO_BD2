@@ -1,8 +1,5 @@
 package org.uade;
 
-import org.uade.exceptions.CassandraConnectionException;
-import org.uade.exceptions.MongoConnectionException;
-import org.uade.exceptions.RedisConnectionException;
 import org.uade.models.Usuario;
 import org.uade.services.CassandraService;
 import org.uade.services.MongoService;
@@ -10,6 +7,7 @@ import org.uade.services.RedisService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class App {
@@ -18,7 +16,7 @@ public class App {
     public static CassandraService cassandraService;
     public static RedisService redisService;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             mongoService = new MongoService(null, null);
             cassandraService = new CassandraService(mongoService);
@@ -34,13 +32,13 @@ public class App {
             e.printStackTrace();
         }
 
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in).useLocale(Locale.US);
         System.out.println("Bienvenido a tu tienda de deporte preferida!");
         System.out.println("Ingresa una opción:");
 
         System.out.println("1. Registrarse a la aplicación (si ingresas por primera vez)");
         System.out.println("2. Ingresar a la aplicación");
-        System.out.println("3. Salir");
+        System.out.println("3. Salir de la aplicacion");
         int opcion = sc.nextInt();
 
         while (opcion != 1 && opcion != 2 && opcion != 3 && opcion != 4) {
@@ -104,21 +102,38 @@ public class App {
                 System.out.print("\nIngrese una opción: ");
                 int opcionAdmin = sc.nextInt();
 
-                switch (opcionAdmin) {
-                    case 1:
-                        mongoService.recuperarCatalogo();
-                    case 2:
-                        System.out.print("Ingrese el producto que desea actualizar: ");
-                        int idProducto = sc.nextInt();
-                        mongoService.actualizarProducto(idProducto);
-                    case 3:
-                        mongoService.agregarProductoAlCatalogo();
-                    case 4:
-                        cassandraService.verLogsCatalogo();
-                    case 5:
-                        cassandraService.verLogFacturas();
-                    case 0:
-                        break;
+                while (opcionAdmin != 0) {
+                    switch (opcionAdmin) {
+                        case 1:
+                            mongoService.recuperarCatalogo();
+                            sc.nextLine();
+                            sc.nextLine();
+                            break;
+                        case 2:
+                            System.out.print("Ingrese el producto que desea actualizar: ");
+                            int idProducto = sc.nextInt();
+                            mongoService.actualizarProducto(idProducto);
+                            break;
+                        case 3:
+                            mongoService.agregarProductoAlCatalogo();
+                            break;
+                        case 4:
+                            cassandraService.verLogsCatalogo();
+                            break;
+                        case 5:
+                            cassandraService.verLogFacturas();
+                    }
+                    System.out.println("Bienvenido al menú de Administrador!");
+                    System.out.println("\n1.- Ver productos");
+                    System.out.println("2.- Modificar producto");
+                    System.out.println("3.- Agregar producto al catálogo");
+                    System.out.println("4.- Ver log de cambios del catálogo");
+                    System.out.println("5.- Ver log de facturas");
+                    // System.out.println("Ver actividad diaria de usuario");
+                    System.out.println("0.- SALIR");
+
+                    System.out.print("\nIngrese una opción: ");
+                    opcionAdmin = sc.nextInt();
                 }
             }
             // Opciones usuario comun
@@ -137,7 +152,7 @@ public class App {
                 System.out.print("\nIngrese una opción: ");
                 int opcionCliente = sc.nextInt();
 
-                List<Integer> opciones = Arrays.asList(1,2,3,4,5,6,7,0);
+                List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 0);
                 while (opcionCliente != 0) {
                     while (!opciones.contains(opcionCliente)) {
                         System.out.print("Opcion no valida. Vuelva a intentar: ");

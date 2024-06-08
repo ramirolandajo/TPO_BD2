@@ -36,6 +36,10 @@ public class MongoDB {
 
 
             MongoDatabase db = mongoClient.getDatabase("tpo-bd2").withCodecRegistry(pojoCodecRegistry);
+            db.createCollection("Productos");
+            db.createCollection("Usuarios");
+            db.createCollection("Pedidos");
+            db.createCollection("Facturas");
             return db;
         }
         catch (Exception e) {
