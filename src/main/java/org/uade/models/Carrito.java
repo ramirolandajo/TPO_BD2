@@ -1,18 +1,18 @@
 package org.uade.models;
 
-import java.util.Date;
-import java.util.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Map;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Carrito {
-    private int idCarrito;
-    private List<Producto> productos;
-    private int cantidad;
-    private Float precioTotal;
-    private Float descuento;
-    private Date fechaCreacion;
-    private boolean carritoCreado;
+    private String idCarrito;
+    private Map<Producto, Integer> productos;
+
 }

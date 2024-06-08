@@ -75,7 +75,8 @@ public class MongoService {
     public void recuperarCatalogo(){
         FindIterable<Producto> productos = coleccionProductos.find();
         for(Producto p : productos) {
-            System.out.println(p.getIdProducto() + " " + p.getDescripcion() + " " + p.getPrecio() + " " + p.getImpuestoIVA() + " " + p.getDescuento() + " " + p.getImagen());
+            System.out.println(p.getIdProducto() + " " + p.getDescripcion() + " " + p.getPrecio() +
+                    " " + p.getImpuestoIVA() + " " + p.getDescuento() + " " + p.getImagen());
             System.out.println();
         }
     }
@@ -121,18 +122,22 @@ public class MongoService {
 
         FindIterable<Producto> productoEncontrado = coleccionProductos.find(filter);
         for(Producto p : productoEncontrado)
-            this.coleccionProductos.updateOne(filter, updates); // Se actualiza el producto.
+            // Se actualiza el producto.
+            this.coleccionProductos.updateOne(filter, updates);
 
-
-        Producto productoActualizado = recuperarProducto(filter); // Se recupera el producto actualizado para imprimirlo.
+        // Se recupera el producto actualizado para imprimirlo.
+        Producto productoActualizado = recuperarProducto(filter);
 
         System.out.println("Ingrese el tipo de cambio: ");
         String tipoCambio = sc.nextLine();
 
-        System.out.println("Ingrese el operador a cargo: "); // Chequear si el operador lo pasamos a String para indicar el rol
-        int idOperador= sc.nextInt();                        // (cajero, delivery, etc.) o lo dejamos con Id.
+        // Chequear si el operador lo pasamos a String para indicar el rol
+        System.out.println("Ingrese el operador a cargo: ");
+        // (cajero, delivery, etc.) o lo dejamos con Id.
+        int idOperador= sc.nextInt();
 
-        cassandraDatabase.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador); // Se logea el cambio del catálogo en Cassandra.
+        // Se logea el cambio del catálogo en Cassandra.
+        cassandraDatabase.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
 
         System.out.println("Producto actualizado!");
         System.out.println(productoActualizado.getIdProducto() + " " + productoActualizado.getDescripcion() + " " + productoActualizado.getPrecio() + " " + productoActualizado.getImpuestoIVA() + " " + productoActualizado.getDescuento() + " " + productoActualizado.getImagen());
@@ -143,6 +148,14 @@ public class MongoService {
         System.out.println("Pedido generado con éxito!");
     }
 
+    public Pedido recuperarPedido(int idPedido) {
+        Bson filter = Filters.eq("idPedido", idPedido);
+        FindIterable<Pedido> pedidoEncontrado = this.coleccionPedidos.find(filter);
+        for (Pedido pedido : pedidoEncontrado) {
+            return pedido;
+        }
+        return null;
+    }
 
     public void generarFactura(){
         System.out.println("Ingrese el código del pedido");
@@ -150,7 +163,7 @@ public class MongoService {
 
         System.out.println("Ingrese el medio de pago: ");
         String medioDePago = sc.nextLine();
-
+        //TODO logica monto de la factura
         this.coleccionFacturas.insertOne(new Factura(++Factura.contadorId, idPedido, false, medioDePago, (float) 0.0F));
     }
 

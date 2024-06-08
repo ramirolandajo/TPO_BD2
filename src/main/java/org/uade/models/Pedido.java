@@ -1,6 +1,7 @@
 package org.uade.models;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.*;
 @AllArgsConstructor
@@ -9,10 +10,9 @@ import lombok.*;
 @Setter
 public class Pedido {
     private int idPedido;
-    private List<Producto> productos;
+    private Map<Producto, Integer> productos;
     private Usuario usuario;
     private Double precioTotal;
-    private String estado;
 }
 
 
