@@ -1,19 +1,11 @@
 package org.uade.services;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import org.bson.conversions.Bson;
+import com.mongodb.client.*;
+import com.mongodb.client.model.*;
+import org.bson.conversions.*;
 import org.uade.connections.MongoDB;
-import org.uade.exceptions.CassandraConnectionException;
-import org.uade.exceptions.MongoConnectionException;
-import org.uade.exceptions.RedisConnectionException;
-import org.uade.models.Factura;
-import org.uade.models.Pedido;
-import org.uade.models.Producto;
-import org.uade.models.Usuario;
+import org.uade.exceptions.*;
+import org.uade.models.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +18,20 @@ public class MongoService {
     private MongoCollection<Usuario> coleccionUsuarios;
     private MongoCollection<Pedido> coleccionPedidos;
     private MongoCollection<Factura> coleccionFacturas;
-    CassandraService cassandraService;
-    Scanner sc = new Scanner(System.in);
-    RedisService redisService;
 
-    public MongoService(RedisService redis, CassandraService cassandra) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
+    private CassandraService cassandraService;
+    private RedisService redisService ;
+
+    Scanner sc = new Scanner(System.in);
+
+    public MongoService(CassandraService cassandraService, RedisService redisService) throws MongoConnectionException{
         this.database = MongoDB.getInstancia().getConnection();
         this.coleccionProductos = database.getCollection("Productos", Producto.class);
         this.coleccionUsuarios = database.getCollection("Usuarios", Usuario.class);
         this.coleccionPedidos = database.getCollection("Pedidos", Pedido.class);
         this.coleccionFacturas = database.getCollection("Facturas", Factura.class);
-        this.redisService = redis;
-        this.cassandraService = cassandra;
+        this.cassandraService = cassandraService;
+        this.redisService = redisService;
     }
 
     public void agregarUsuario(Usuario usuario) {
@@ -190,7 +184,7 @@ public class MongoService {
         return null;
     }
 
-    public Factura generarFactura(Pedido pedido, float totalIVA) throws MongoConnectionException, CassandraConnectionException {
+    public void generarFactura(Pedido pedido, float totalIVA) throws MongoConnectionException, CassandraConnectionException {
         // le pide directamente el medio de pago aunque sea que acaba de confirmar el carrito?
         System.out.println("Ingrese el medio de pago: ");
         System.out.println("1. Para abonar en efectivo");
@@ -237,14 +231,11 @@ public class MongoService {
         Factura factura = new Factura();
         factura.setIdFactura(++Factura.contadorId);
         factura.setIdPedido(pedido.getIdPedido());
-        factura.setIdUsuario(usuario.getDni());
         factura.setFacturaPagada(false);
         factura.setFormaPago(formaPago);
         factura.setMonto(montoFactura);
 
         this.coleccionFacturas.insertOne(factura);
-
-        return factura;
     }
 
     public void pagarFactura(){
@@ -270,22 +261,22 @@ public class MongoService {
             System.out.println("La factura no se encuentra registrada en la base de datos!");
     }
 
-    public Factura recuperarFactura(int idFactura){
+    public Factura recuperarFactura(int idFactura) {
         Bson filter = Filters.eq("idFactura", idFactura);
 
-        Iterable<Factura> facturasUsuario = this.coleccionFacturas.find(filter);
-        for(Factura fac : facturasUsuario){
+        Iterable<Factura> facturas = this.coleccionFacturas.find(filter);
+        for (Factura fac : facturas) {
             return fac;
         }
+
         return null;
     }
 
     public void recuperarFacturasUsuario(String idUsuario) {
-        Bson filter = Filters.eq("idUsuario", idUsuario);
-
-        Iterable<Factura> facturas = this.coleccionFacturas.find(filter);
+        Iterable<Factura> facturas = this.coleccionFacturas.find();
         for (Factura fac : facturas) {
-            System.out.printf("%d %d %s %b %s %f", fac.getIdFactura(), fac.getIdPedido(), fac.getIdUsuario(), fac.isFacturaPagada(), fac.getFormaPago(), fac.getMonto());
+            System.out.println(fac.getIdFactura() + " " + fac.isFacturaPagada() + " " + fac.getFormaPago());
+            System.out.println();
         }
     }
 }

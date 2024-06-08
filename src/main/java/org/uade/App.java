@@ -14,16 +14,25 @@ import java.util.Scanner;
 
 public class App {
 
-    public static MongoService mongo;
-    public static RedisService redis;
-    public static CassandraService cassandra;
+    public static MongoService mongoService;
+    public static CassandraService cassandraService;
+    public static RedisService redisService;
 
-    public static void main(String[] args) throws MongoConnectionException, RedisConnectionException, CassandraConnectionException {
-        mongo = new MongoService(null, null);
-        redis = new RedisService(mongo);
-            cassandra = new CassandraService(mongo);
+    public static void main(String[] args){
+        try {
+            mongoService = new MongoService(null, null);
+            cassandraService = new CassandraService(mongoService);
+            redisService = new RedisService(mongoService);
 
-        mongo = new MongoService(redis, cassandra);
+            // After creating the redisService, set it in mongoService and cassandraService
+            mongoService = new MongoService(cassandraService, redisService);
+
+            // Now all services are properly wired and can interact with each other
+            // Your application logic here
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido a tu tienda de deporte preferida!");
@@ -65,30 +74,31 @@ public class App {
             } else {
                 tipoUsuario = "INDIVIDUO";
             }
-            Usuario usuario = mongo.recuperarUsuario(documento);
+            Usuario usuario = mongoService.recuperarUsuario(documento);
             if (usuario != null) {
                 System.out.println("El usuario con DNI " + documento + " ya se encuentra registrado en la base de datos!");
             } else {
-                mongo.agregarUsuario(new Usuario(documento, nombreCompleto, direccion, cuentaCorriente, tipoUsuario));
+                mongoService.agregarUsuario(new Usuario(documento, nombreCompleto, direccion, cuentaCorriente, tipoUsuario));
             }
 
         }
         // Opciones Administrador
         else if (opcion == 2) {
             System.out.print("Ingrese su DNI: ");
-            String doc = sc.nextLine();
-            while (Integer.parseInt(doc) < 1) {
+            int doc = sc.nextInt();
+            while (doc < 1) {
                 System.out.println("Número no válido. Ingrese un número positivo!");
-                doc = sc.nextLine();
+                doc = sc.nextInt();
 
             }
-            if (Integer.parseInt(doc) == 1) {
+            if (doc == 1) {
                 System.out.println("Bienvenido al menú de Administrador!");
                 System.out.println("\n1.- Ver productos");
                 System.out.println("2.- Modificar producto");
                 System.out.println("3.- Agregar producto al catálogo");
                 System.out.println("4.- Ver log de cambios del catálogo");
                 System.out.println("5.- Ver log de facturas");
+                // System.out.println("Ver actividad diaria de usuario");
                 System.out.println("0.- SALIR");
 
                 System.out.print("\nIngrese una opción: ");
@@ -96,24 +106,24 @@ public class App {
 
                 switch (opcionAdmin) {
                     case 1:
-                        mongo.recuperarCatalogo();
+                        mongoService.recuperarCatalogo();
                     case 2:
                         System.out.print("Ingrese el producto que desea actualizar: ");
                         int idProducto = sc.nextInt();
-                        mongo.actualizarProducto(idProducto);
+                        mongoService.actualizarProducto(idProducto);
                     case 3:
-                        mongo.agregarProductoAlCatalogo();
+                        mongoService.agregarProductoAlCatalogo();
                     case 4:
-                        cassandra.verLogsCatalogo();
+                        cassandraService.verLogsCatalogo();
                     case 5:
-                        cassandra.verLogFacturas();
+                        cassandraService.verLogFacturas();
                     case 0:
                         break;
                 }
             }
             // Opciones usuario comun
             else {
-                redis.iniciarSesion(doc);
+                redisService.iniciarSesion(String.valueOf(doc));
                 System.out.println("Bienvenido al menú de Cliente");
                 System.out.println("\n1.- Ver productos");
                 System.out.println("2.- Agregar producto al carrito");
@@ -135,32 +145,28 @@ public class App {
                     }
                     switch (opcionCliente) {
                         case 1:
-                            mongo.recuperarCatalogo();
+                            mongoService.recuperarCatalogo();
                             break;
                         case 2:
-                            //TODO
-                            System.out.println();
+                            redisService.agregarProductoCarrito(String.valueOf(doc));
                             break;
                         case 3:
-                            //TODO
-                            System.out.println();
+                            redisService.eliminarProductoCarrito(String.valueOf(doc));
                             break;
                         case 4:
-                            //TODO
-                            System.out.println();
+                            redisService.modificarCantidadProductoCarrito(String.valueOf(doc));
                             break;
                         case 5:
-                            //TODO
                             System.out.println();
                             break;
                         case 6:
-                            mongo.recuperarFacturasUsuario(doc);
+                            mongoService.recuperarFacturasUsuario(String.valueOf(doc));
                             break;
                         case 7:
-                            mongo.pagarFactura();
+                            mongoService.pagarFactura();
                             break;
                         case 0:
-                            redis.cerrarSesion(doc);
+                            redisService.cerrarSesion(String.valueOf(doc));
                             break;
                         default:
                             break;
