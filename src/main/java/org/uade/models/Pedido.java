@@ -13,7 +13,7 @@ import java.util.Map;
 @Setter
 public class Pedido {
     private int idPedido;
-    private Map<Producto, Integer> productos;
+    private Map<String, Integer> productos;
     private Usuario usuario;
     private float precioTotal;
 }

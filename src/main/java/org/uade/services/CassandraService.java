@@ -8,6 +8,7 @@ import org.uade.exceptions.CassandraConnectionException;
 import org.uade.models.Factura;
 import org.uade.models.Producto;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -96,19 +97,23 @@ public class CassandraService {
                 " monto float, PRIMARY KEY (idLog, fecha_hora))");
 
         String operador;
-        if (factura.getFormaPago().equals("EFECTIVO")) {
-            operador = "Empleado delivery (contra entrega)";
-        } else if (factura.getFormaPago().equals("PUNTO_RETIRO")) {
-            operador = "Empleado local";
-        } else {
-            operador = null;
+        if (factura.getFormaPago() != null) {
+            if (factura.getFormaPago().equals("EFECTIVO")) {
+                operador = "Empleado delivery (contra entrega)";
+            } else if (factura.getFormaPago().equals("PUNTO_RETIRO")) {
+                operador = "Empleado local";
+            } else {
+                operador = null;
+            }
         }
+        else
+            operador = null;
 
         LocalDateTime fecha_hora_actual = LocalDateTime.now();
 
         String cqlStatement = String.format(Locale.US, "INSERT INTO logFacturas (idLog, idFactura, idPedidoReferencia, idUsuario, " +
-                        "facturaPagada, formaPago, operador, fecha_hora, monto) VALUES (uuid(), %d, %d, '%s', '%s', '%s', " +
-                        "'%s', '%s', %.2f",
+                        "facturaPagada, formaPago, operador, fecha_hora, monto) VALUES (uuid(), %d, %d, '%s', %b, '%s', " +
+                        "'%s', '%s', %.2f)",
                 factura.getIdFactura(),
                 factura.getIdPedido(),
                 factura.getIdUsuario(),
@@ -130,25 +135,25 @@ public class CassandraService {
         // Construye un StringBuilder para formatear la salida
         StringBuilder sb = new StringBuilder();
 
-        // Imprime los encabezados de columna (opcional)
-        sb.append(String.format("%-36s %-12s %-20s %-10s %-10s %-10s %-20s %-20s",
-                "\nidLog", "idFactura", "idPedidoReferencia", "facturaPagada", "formaPago", "operador",
+        sb.append(String.format("%-40s %-10s %-20s %-15s %-20s %-35s %-50s %-15s\n",
+                "idLog", "idFactura", "idPedidoReferencia", "facturaPagada", "formaPago", "operador",
                 "fecha_hora", "monto"));
 
-        // Recorre cada fila en el ResultSet
         for (Row row : result) {
-            sb.append(String.format("%-40s %-10d %-20s %-10.2f %-10.2f %-10.2f %-20s",
+            sb.append(String.format("%-40s %-10d %-20d %-15s %-20s %-35s %-50s %-15s\n",
                     row.getUUID("idLog"),
                     row.getInt("idFactura"),
-                    row.getString("idPedidoReferencia"),
-                    row.getFloat("facturaPagada"),
-                    row.getFloat("formaPago"),
-                    row.getFloat("operador"),
-                    row.getString("imagenVieja")));
+                    row.getInt("idPedidoReferencia"),
+                    row.getBool("facturaPagada"),
+                    row.getString("formaPago") != null ? row.getString("formaPago") : "null",
+                    row.getString("operador") != null ? row.getString("operador") : "null",
+                    new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").format(row.getTimestamp("fecha_hora")),
+                    String.format("%,.2f", row.getFloat("monto"))
+            ));
         }
 
         // Imprime el resultado formateado
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     public void close() {

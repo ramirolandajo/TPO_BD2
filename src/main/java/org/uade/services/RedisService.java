@@ -99,7 +99,6 @@ public class RedisService {
         Map<String, String> carritoUsuario = this.database.hgetAll("carrito:" + idUsuario);
         if (carritoUsuario != null) {
             this.estadoCarrito.push(carritoUsuario);
-            System.out.println("agregado al stack");
         } else
             this.estadoCarrito.empty();
 
@@ -133,7 +132,6 @@ public class RedisService {
         Map<String, String> carritoUsuario = this.database.hgetAll("carrito:" + idUsuario);
         if (carritoUsuario != null) {
             this.estadoCarrito.push(carritoUsuario);
-            System.out.println("agregado al stack");
         } else
             this.estadoCarrito.empty();
 
@@ -166,6 +164,7 @@ public class RedisService {
             System.out.println("La cantidad debe ser mayor a 0");
             System.out.print("Ingrese la cantidad que desea agregar: ");
             cantidad = sc.nextInt();
+            sc.nextLine();
         }
         this.database.hset("carrito:" + idUsuario, String.valueOf(idProducto), String.valueOf(cantidad));
 
@@ -173,7 +172,6 @@ public class RedisService {
         Map<String, String> carritoUsuario = this.database.hgetAll("carrito:" + idUsuario);
         if (carritoUsuario != null) {
             this.estadoCarrito.push(carritoUsuario);
-            System.out.println("agregado al stack");
         } else
             this.estadoCarrito.empty();
 

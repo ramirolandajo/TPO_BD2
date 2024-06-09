@@ -22,17 +22,13 @@ public class App {
             cassandraService = new CassandraService(mongoService);
             redisService = new RedisService(mongoService);
 
-            // After creating the redisService, set it in mongoService and cassandraService
             mongoService = new MongoService(cassandraService, redisService);
-
-            // Now all services are properly wired and can interact with each other
-            // Your application logic here
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         Scanner sc = new Scanner(System.in).useLocale(Locale.US);
+
         System.out.println("Bienvenido a tu tienda de deporte preferida!");
         System.out.println("Ingresa una opción:");
 
@@ -49,6 +45,7 @@ public class App {
 
         while (opcion != 3) {
             if (opcion == 1) {
+                sc.nextLine();
                 System.out.print("Ingrese su nombre completo: ");
                 String nombreCompleto = sc.nextLine();
 
@@ -154,60 +151,13 @@ public class App {
                 }
                 // Opciones usuario comun
                 else {
-                    redisService.iniciarSesion(String.valueOf(doc));
-                    System.out.println("Bienvenido al menú de Cliente");
-                    System.out.println("\n1.- Ver productos");
-                    System.out.println("2.- Ver carrito");
-                    System.out.println("3.- Agregar producto al carrito");
-                    System.out.println("4.- Eliminar producto del carrito");
-                    System.out.println("5.- Modificar cantidad producto del carrito");
-                    System.out.println("6.- Volver al estado del carrito anterior");
-                    System.out.println("7.- Confirmar carrito (generar pedido)");
-                    System.out.println("8.- Ver facturas");
-                    System.out.println("9.- Pagar factura");
-                    System.out.println("0.- SALIR");
-
-                    System.out.print("\nIngrese una opción: ");
-                    int opcionCliente = sc.nextInt();
-
-                    List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 0);
-                    while (opcionCliente != 0) {
-                        while (!opciones.contains(opcionCliente)) {
-                            System.out.print("Opcion no valida. Vuelva a intentar: ");
-                            opcionCliente = sc.nextInt();
-                        }
-                        switch (opcionCliente) {
-                            case 1:
-                                mongoService.recuperarCatalogo();
-                                break;
-                            case 2:
-                                redisService.mostrarCarrito(String.valueOf(doc));
-                                break;
-                            case 3:
-                                redisService.agregarProductoCarrito(String.valueOf(doc));
-                                break;
-                            case 4:
-                                redisService.eliminarProductoCarrito(String.valueOf(doc));
-                                break;
-                            case 5:
-                                redisService.modificarCantidadProductoCarrito(String.valueOf(doc));
-                                break;
-                            case 6:
-                                redisService.undoEstadoCarrito(String.valueOf(doc));
-                                break;
-                            case 7:
-                                mongoService.generarPedido(String.valueOf(doc));
-                                break;
-                            case 8:
-                                mongoService.recuperarFacturasUsuario(String.valueOf(doc));
-                                break;
-                            case 9:
-                                mongoService.pagarFactura();
-                                break;
-                            default:
-                                break;
-                        }
-
+                    Usuario usuario = mongoService.recuperarUsuario(String.valueOf(doc));
+                    if (usuario == null) {
+                        System.out.println("El usuario con DNI " + doc + " no se encuentra en la base de datos!\n");
+                    }
+                    else {
+                        redisService.iniciarSesion(String.valueOf(doc));
+                        System.out.println("Bienvenido al menú de Cliente");
                         System.out.println("\n1.- Ver productos");
                         System.out.println("2.- Ver carrito");
                         System.out.println("3.- Agregar producto al carrito");
@@ -220,14 +170,64 @@ public class App {
                         System.out.println("0.- SALIR");
 
                         System.out.print("\nIngrese una opción: ");
-                        opcionCliente = sc.nextInt();
-                        sc.nextLine();
-                    }
+                        int opcionCliente = sc.nextInt();
 
-                    redisService.cerrarSesion(String.valueOf(doc));
+                        List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+                        while (opcionCliente != 0) {
+                            while (!opciones.contains(opcionCliente)) {
+                                System.out.print("Opcion no valida. Vuelva a intentar: ");
+                                opcionCliente = sc.nextInt();
+                            }
+                            switch (opcionCliente) {
+                                case 1:
+                                    mongoService.recuperarCatalogo();
+                                    break;
+                                case 2:
+                                    redisService.mostrarCarrito(String.valueOf(doc));
+                                    break;
+                                case 3:
+                                    redisService.agregarProductoCarrito(String.valueOf(doc));
+                                    break;
+                                case 4:
+                                    redisService.eliminarProductoCarrito(String.valueOf(doc));
+                                    break;
+                                case 5:
+                                    redisService.modificarCantidadProductoCarrito(String.valueOf(doc));
+                                    break;
+                                case 6:
+                                    redisService.undoEstadoCarrito(String.valueOf(doc));
+                                    break;
+                                case 7:
+                                    mongoService.generarPedido(String.valueOf(doc));
+                                    break;
+                                case 8:
+                                    mongoService.recuperarFacturasUsuario(String.valueOf(doc));
+                                    break;
+                                case 9:
+                                    mongoService.pagarFactura();
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            System.out.println("\n1.- Ver productos");
+                            System.out.println("2.- Ver carrito");
+                            System.out.println("3.- Agregar producto al carrito");
+                            System.out.println("4.- Eliminar producto del carrito");
+                            System.out.println("5.- Modificar cantidad producto del carrito");
+                            System.out.println("6.- Volver al estado del carrito anterior");
+                            System.out.println("7.- Confirmar carrito (generar pedido)");
+                            System.out.println("8.- Ver facturas");
+                            System.out.println("9.- Pagar factura");
+                            System.out.println("0.- SALIR");
+
+                            System.out.print("\nIngrese una opción: ");
+                            opcionCliente = sc.nextInt();
+                            sc.nextLine();
+                        }
+                        redisService.cerrarSesion(String.valueOf(doc));
+                    }
                 }
-            } else {
-                System.out.println();
             }
             System.out.println("1. Registrarse a la aplicación (si ingresas por primera vez)");
             System.out.println("2. Ingresar a la aplicación");
