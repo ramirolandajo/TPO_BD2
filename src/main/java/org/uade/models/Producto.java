@@ -11,9 +11,6 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 @Getter
 @Setter
 public class Producto {
-    @BsonIgnore
-    public static int contadorId = 0;
-
     private int idProducto;
     private String descripcion;
     private float precio;

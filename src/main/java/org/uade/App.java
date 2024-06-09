@@ -94,8 +94,9 @@ public class App {
                     System.out.println("\n1.- Ver productos");
                     System.out.println("2.- Modificar producto");
                     System.out.println("3.- Agregar producto al catálogo");
-                    System.out.println("4.- Ver log de cambios del catálogo");
-                    System.out.println("5.- Ver log de facturas");
+                    System.out.println("4.- Eliminar producto del catálogo");
+                    System.out.println("5.- Ver log de cambios del catálogo");
+                    System.out.println("6.- Ver log de facturas");
                     // System.out.println("Ver actividad diaria de usuario");
                     System.out.println("0.- SALIR");
 
@@ -109,16 +110,23 @@ public class App {
                                 break;
                             case 2:
                                 System.out.print("Ingrese el producto que desea actualizar: ");
-                                int idProducto = sc.nextInt();
-                                mongoService.actualizarProducto(idProducto);
+                                int idProductoActualizar = sc.nextInt();
+                                sc.nextLine();
+                                mongoService.actualizarProducto(idProductoActualizar);
                                 break;
                             case 3:
                                 mongoService.agregarProductoAlCatalogo();
                                 break;
                             case 4:
-                                cassandraService.verLogsCatalogo();
+                                System.out.print("Ingrese el producto que desea eliminar: ");
+                                int idProductoEliminar = sc.nextInt();
+                                sc.nextLine();
+                                mongoService.eliminarProductoDelCatalogo(idProductoEliminar);
                                 break;
                             case 5:
+                                cassandraService.verLogsCatalogo();
+                                break;
+                            case 6:
                                 cassandraService.verLogFacturas();
                                 break;
                         }
@@ -126,8 +134,9 @@ public class App {
                         System.out.println("\n1.- Ver productos");
                         System.out.println("2.- Modificar producto");
                         System.out.println("3.- Agregar producto al catálogo");
-                        System.out.println("4.- Ver log de cambios del catálogo");
-                        System.out.println("5.- Ver log de facturas");
+                        System.out.println("4.- Eliminar producto del catálogo");
+                        System.out.println("5.- Ver log de cambios del catálogo");
+                        System.out.println("6.- Ver log de facturas");
                         // System.out.println("Ver actividad diaria de usuario");
                         System.out.println("0.- SALIR");
 

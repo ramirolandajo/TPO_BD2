@@ -46,31 +46,40 @@ public class MongoService {
     public void agregarProductoAlCatalogo() {
         System.out.println("Ingrese los datos a del producto nuevo: ");
 
-        System.out.println("Descripción: ");
+        System.out.print("ID: ");
+        int idProducto = sc.nextInt();
+        sc.nextLine();
+
+        while(this.recuperarProducto(idProducto) != null){
+            System.out.print("Ya existe un producto con el ID " + idProducto + ". Ingrese otro: ");
+            idProducto = sc.nextInt();
+            sc.nextLine();
+        }
+
+        System.out.print("Descripción: ");
         String descripcion = sc.nextLine();
 
-        System.out.println("Precio: ");
+        System.out.print("Precio: ");
         float precio = sc.nextFloat();
         sc.nextLine();
 
-        System.out.println("Descuento: ");
+        System.out.print("Descuento: ");
         float descuento = sc.nextFloat();
         sc.nextLine();
 
-        System.out.println("Impuesto de IVA: ");
+        System.out.print("Impuesto de IVA: ");
         float impuestoIVA = sc.nextFloat();
         sc.nextLine();
 
-        System.out.println("Imagen: ");
+        System.out.print("Imagen: ");
         String imagen = sc.nextLine();
 
-        int idProducto = ++Producto.contadorId;
-        System.out.println("ID: " + idProducto);
         this.coleccionProductos.insertOne(new Producto(idProducto, descripcion, precio, descuento, impuestoIVA, imagen));
         System.out.println("Producto agregado al catalogo con éxito!");
     }
 
-    public Producto recuperarProducto(Bson filter) {
+    public Producto recuperarProducto(int idProducto) {
+        Bson filter = Filters.eq("idProducto", idProducto);
         FindIterable<Producto> productoEncontrado = this.coleccionProductos.find(filter);
         for (Producto producto : productoEncontrado)
             return producto;
@@ -122,8 +131,7 @@ public class MongoService {
         System.out.print("Imagen: ");
         String imagen = sc.nextLine();
 
-        Bson filter = Filters.eq("idProducto", id);
-        List<Bson> updates = new ArrayList<>();
+        List<Bson> updates = new ArrayList<>(); // Lista de elementos a actualizar.
 
         if (descripcion != null && !descripcion.isEmpty()) {
             updates.add(Updates.set("descripcion", descripcion));
@@ -146,14 +154,14 @@ public class MongoService {
             System.out.print("Ingrese el tipo de cambio: ");
             String tipoCambio = sc.nextLine();
 
-            // Chequear si el operador lo pasamos a String para indicar el rol
             System.out.print("Ingrese el operador a cargo: ");
-            // (cajero, delivery, etc.) o lo dejamos con Id.
             int idOperador = sc.nextInt();
             sc.nextLine();
 
+            Bson filter = Filters.eq("idProducto", id);
+
             // Se recupera el producto antes de actualizarlo.
-            Producto producto = recuperarProducto(filter);
+            Producto producto = recuperarProducto(id);
             Producto productoViejo = new Producto(producto.getIdProducto(), producto.getDescripcion(),
                     producto.getPrecio(), producto.getDescuento(), producto.getImpuestoIVA(), producto.getImagen());
 
@@ -161,7 +169,8 @@ public class MongoService {
             this.coleccionProductos.updateOne(filter, updates);
 
             // Se recupera el producto actualizado para imprimirlo.
-            Producto productoActualizado = recuperarProducto(filter);
+            Producto productoActualizado = recuperarProducto(id);
+
             // Se logea el cambio del catálogo en Cassandra.
             cassandraService.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
 
@@ -173,7 +182,22 @@ public class MongoService {
         }
     }
 
-    public void generarPedido(String idUsuario) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
+    public void eliminarProductoDelCatalogo(int idProducto){
+        while(idProducto != -1){
+            Bson filter = Filters.eq("idProducto", idProducto);
+            if(this.recuperarProducto(idProducto) != null){
+                this.coleccionProductos.deleteOne(filter);
+                System.out.println("Producto " + idProducto + " eliminado con éxito!");
+                idProducto = -1;
+            }else {
+                System.out.print("El producto con el ID " + idProducto + " no existe! Ingrese otro id (presione -1 para salir): ");
+                idProducto = sc.nextInt();
+                sc.nextLine();
+            }
+        }
+    }
+
+    public void generarPedido(String idUsuario) {
         Pedido pedido = new Pedido();
         pedido.setIdPedido(++Pedido.contadorId);
 

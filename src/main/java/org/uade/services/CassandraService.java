@@ -1,5 +1,7 @@
 package org.uade.services;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import org.uade.connections.CassandraDB;
 import org.uade.exceptions.CassandraConnectionException;
@@ -8,7 +10,6 @@ import org.uade.models.Pedido;
 import org.uade.models.Producto;
 
 import java.util.Locale;
-import java.util.UUID;
 
 public class CassandraService {
 
@@ -54,7 +55,39 @@ public class CassandraService {
 
     public void verLogsCatalogo() {
         String statement = "SELECT * FROM logCambiosProductos";
-        session.execute(statement);
+
+        ResultSet result = session.execute(statement);
+
+        // Construye un StringBuilder para formatear la salida
+        StringBuilder sb = new StringBuilder();
+
+        // Imprime los encabezados de columna (opcional)
+        sb.append(String.format("%-36s %-12s %-20s %-10s %-10s %-10s %-20s %-20s %-10s %-10s %-10s %-20s %-20s %-10s%n",
+                "\nidLog", "idProducto", "descripcionVieja", "precioViejo", "descuentoViejo", "impuestoIvaViejo",
+                "imagenVieja", "descripcionNueva", "precioNuevo", "descuentoNuevo", "impuestoIvaNuevo",
+                "imagenNueva", "tipoCambio", "operador"));
+
+        // Recorre cada fila en el ResultSet
+        for (Row row : result) {
+            sb.append(String.format("%-40s %-10d %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10d%n",
+                    row.getUUID("idLog"),
+                    row.getInt("idProducto"),
+                    row.getString("descripcionVieja"),
+                    row.getFloat("precioViejo"),
+                    row.getFloat("descuentoViejo"),
+                    row.getFloat("impuestoIvaViejo"),
+                    row.getString("imagenVieja"),
+                    row.getString("descripcionNueva"),
+                    row.getFloat("precioNuevo"),
+                    row.getFloat("descuentoNuevo"),
+                    row.getFloat("impuestoIvaNuevo"),
+                    row.getString("imagenNueva"),
+                    row.getString("tipoCambio"),
+                    row.getInt("operador")));
+        }
+
+// Imprime el resultado formateado
+        System.out.println(sb.toString());
     }
 
     public void logFactura(Factura factura) {
@@ -72,7 +105,7 @@ public class CassandraService {
         } else {
             operador = null;
         }
-        String cqlStatement = "INSERT INTO logFacturas(idLog, idFactura, idPedidoReferencia, idUsuario, " +
+        String cqlStatement = "INSERT INTO logFacturas(idLog, idFactura, idPedidoReferencia, , " +
                 "facturaPagada, formaPago, operador, fecha_hora, monto) VALUES (uuid(), " + factura.getIdFactura()
                 + ", " + factura.getIdPedido() + ", " + pedidoReferencia.getUsuario().getDni()
                 + ", " + factura.isFacturaPagada() + ", " + factura.getFormaPago() + ", " + operador
@@ -83,7 +116,31 @@ public class CassandraService {
 
     public void verLogFacturas() {
         String statement = "SELECT * FROM logFacturas";
-        session.execute(statement);
+
+        ResultSet result = session.execute(statement);
+
+        // Construye un StringBuilder para formatear la salida
+        StringBuilder sb = new StringBuilder();
+
+        // Imprime los encabezados de columna (opcional)
+        sb.append(String.format("%-36s %-12s %-20s %-10s %-10s %-10s %-20s %-20s %-10s %-10s %-10s %-20s %-20s %-10s%n",
+                "\nidLog", "idFactura", "idPedidoReferencia", "facturaPagada", "formaPago", "operador",
+                "fecha_hora", "monto"));
+
+        // Recorre cada fila en el ResultSet
+        for (Row row : result) {
+            sb.append(String.format("%-40s %-10d %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10d%n",
+                    row.getUUID("idLog"),
+                    row.getInt("idFactura"),
+                    row.getString("idPedidoReferencia"),
+                    row.getFloat("facturaPagada"),
+                    row.getFloat("formaPago"),
+                    row.getFloat("operador"),
+                    row.getString("imagenVieja")));
+        }
+
+        // Imprime el resultado formateado
+        System.out.println(sb.toString());
     }
 
     public void close() {

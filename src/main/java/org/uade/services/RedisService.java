@@ -53,16 +53,21 @@ public class RedisService {
         System.out.println("Sesión cerrada con éxito!");
     }
 
+    public void verActicvidadDiariaUsuario(String idUsuario){
+        mongoService.recuperarUsuario(idUsuario);
+
+    }
+
     public void agregarProductoCarrito(String idUsuario) {
         mostrarCarrito(idUsuario);
 
         System.out.print("Ingrese el id del producto a comprar: ");
         int idProducto = sc.nextInt();
-        Producto producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+        Producto producto = mongoService.recuperarProducto(idProducto);
         while (producto != null) {
             System.out.printf("El producto con id: %s no existe. Vuelva a ingresar el id del producto: ", idProducto);
             idProducto = sc.nextInt();
-            producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+            producto = mongoService.recuperarProducto(idProducto);
         }
 
         System.out.print("Ingrese la cantidad que desea agregar: ");
@@ -80,11 +85,11 @@ public class RedisService {
 
         System.out.print("Ingrese el id del producto a eliminar del carrito: ");
         int idProducto = sc.nextInt();
-        Producto producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+        Producto producto = mongoService.recuperarProducto(idProducto);
         while (producto != null) {
             System.out.printf("El producto con id: %s no existe. Vuelva a ingresar el id del producto: ", idProducto);
             idProducto = sc.nextInt();
-            producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+            producto = mongoService.recuperarProducto(idProducto);
         }
 
         this.database.hdel("carrito:" + idUsuario, String.valueOf(idProducto));
@@ -95,11 +100,11 @@ public class RedisService {
 
         System.out.print("Ingrese el id del producto a modificar cantidad: ");
         int idProducto = sc.nextInt();
-        Producto producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+        Producto producto = mongoService.recuperarProducto(idProducto);
         while (producto != null) {
             System.out.printf("El producto con id: %s no existe. Vuelva a ingresar el id del producto: ", idProducto);
             idProducto = sc.nextInt();
-            producto = mongoService.recuperarProducto(Filters.eq("idProducto", idProducto));
+            producto = mongoService.recuperarProducto(idProducto);
         }
 
         System.out.print("Ingrese la nueva cantidad del producto: ");
@@ -121,8 +126,7 @@ public class RedisService {
             System.out.println(entry.getKey());
             System.out.println(entry.getValue());
             int idProducto = Integer.parseInt(entry.getKey());
-            Bson filter = Filters.eq("idProducto", idProducto);
-            Producto producto = mongoService.recuperarProducto(filter);
+            Producto producto = mongoService.recuperarProducto(idProducto);
             Integer cantidad = Integer.valueOf(entry.getValue());
             itemsCarrito.put(producto, cantidad);
         }
