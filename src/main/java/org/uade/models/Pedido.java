@@ -12,7 +12,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class Pedido {
-    public static int contadorId = 0;
     private int idPedido;
     private Map<Producto, Integer> productos;
     private Usuario usuario;

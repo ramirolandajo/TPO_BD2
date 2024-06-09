@@ -24,7 +24,7 @@ public class RedisService {
         this.database = RedisDB.getInstancia().getConnection();
     }
 
-    // Clase que se utiliza para ver la hora de inicio de sesion del usuario.
+    // Método que se utiliza para ver la hora de inicio de sesion del usuario.
     public void iniciarSesion(String idUsuario) {
         // en un futuro podemos guardar la fecha de inicio de sesion y chequear si es vacio, el mismo dia u otro dia
         tiempoInicio = LocalDateTime.now();
@@ -35,24 +35,38 @@ public class RedisService {
         System.out.println("Sesión iniciada con éxito!");
     }
 
-    // Clase que se utiliza para ver la hora de cerrado de sesion del usuario.
+    // Método que se utiliza para ver la hora de cerrado de sesion del usuario.
     public void cerrarSesion(String idUsuario) {
 
         Duration duration = Duration.between(tiempoInicio, LocalDateTime.now());
-
         long minutos = duration.toMinutes();
 
         if (minutos >= 240)
-            this.database.hset("usuario:" + idUsuario, "Categorización", "TOP");
+            this.database.hset("usuario:" + idUsuario, "categorizacion", "TOP");
         else if (minutos >= 120)
-            this.database.hset("usuario:" + idUsuario, "Categorización", "MEDIUM");
+            this.database.hset("usuario:" + idUsuario, "categorizacion", "MEDIUM");
         else
-            this.database.hset("usuario:" + idUsuario, "Categorización", "LOW");
+            this.database.hset("usuario:" + idUsuario, "categorizacion", "LOW");
 
         // vaciamos el carrito y lo eliminamos de la bd antes de cerrar sesion
         estadoCarrito.empty();
         this.database.del("carrito:" + idUsuario);
         System.out.println("Sesión cerrada con éxito!");
+    }
+
+    public void verActividadUsuario(){
+        System.out.print("Ingrese el usuario que desea ver: ");
+        String idUsuario = sc.nextLine();
+
+        while ((Integer.parseInt(idUsuario) != -1) && (mongoService.recuperarUsuario(idUsuario) == null)) {
+            System.out.print("El usurio con el documento " + idUsuario + " no existe! Intente de nuevo: ");
+            idUsuario = sc.nextLine();
+        }
+
+        if(Integer.parseInt(idUsuario) != -1) {
+            System.out.println("Actividad del usurio: " + this.database.hget("usuario:" + idUsuario, "categorizacion"));
+            sc.nextLine();
+        }
     }
 
     public void agregarProductoCarrito(String idUsuario) {

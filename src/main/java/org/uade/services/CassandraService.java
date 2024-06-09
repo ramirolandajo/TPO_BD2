@@ -131,13 +131,13 @@ public class CassandraService {
         StringBuilder sb = new StringBuilder();
 
         // Imprime los encabezados de columna (opcional)
-        sb.append(String.format("%-36s %-12s %-20s %-10s %-10s %-10s %-20s %-20s %-10s %-10s %-10s %-20s %-20s %-10s%n",
+        sb.append(String.format("%-36s %-12s %-20s %-10s %-10s %-10s %-20s %-20s",
                 "\nidLog", "idFactura", "idPedidoReferencia", "facturaPagada", "formaPago", "operador",
                 "fecha_hora", "monto"));
 
         // Recorre cada fila en el ResultSet
         for (Row row : result) {
-            sb.append(String.format("%-40s %-10d %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10.2f %-10.2f %-10.2f %-20s %-20s %-10d%n",
+            sb.append(String.format("%-40s %-10d %-20s %-10.2f %-10.2f %-10.2f %-20s",
                     row.getUUID("idLog"),
                     row.getInt("idFactura"),
                     row.getString("idPedidoReferencia"),

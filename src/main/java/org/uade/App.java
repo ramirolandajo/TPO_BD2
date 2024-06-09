@@ -97,13 +97,13 @@ public class App {
                     System.out.println("4.- Eliminar producto del catálogo");
                     System.out.println("5.- Ver log de cambios del catálogo");
                     System.out.println("6.- Ver log de facturas");
-                    // System.out.println("Ver actividad diaria de usuario");
+                    System.out.println("7.- Ver actividad diaria de usuario");
                     System.out.println("0.- SALIR");
 
                     System.out.print("\nIngrese una opción: ");
                     int opcionAdmin = sc.nextInt();
 
-                    List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 0);
+                    List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 0);
                     while (opcionAdmin != 0) {
                         while (!opciones.contains(opcionAdmin)) {
                             System.out.print("Opcion no valida. Vuelva a intentar: ");
@@ -134,6 +134,9 @@ public class App {
                             case 6:
                                 cassandraService.verLogFacturas();
                                 break;
+                            case 7:
+                                redisService.verActividadUsuario();
+                                break;
                         }
 
                         System.out.println("\n1.- Ver productos");
@@ -142,7 +145,7 @@ public class App {
                         System.out.println("4.- Eliminar producto del catálogo");
                         System.out.println("5.- Ver log de cambios del catálogo");
                         System.out.println("6.- Ver log de facturas");
-                        // System.out.println("Ver actividad diaria de usuario");
+                        System.out.println("7.- Ver actividad diaria de usuario");
                         System.out.println("0.- SALIR");
 
                         System.out.print("\nIngrese una opción: ");
@@ -201,9 +204,6 @@ public class App {
                             case 9:
                                 mongoService.pagarFactura();
                                 break;
-                            case 0:
-                                redisService.cerrarSesion(String.valueOf(doc));
-                                break;
                             default:
                                 break;
                         }
@@ -223,6 +223,8 @@ public class App {
                         opcionCliente = sc.nextInt();
                         sc.nextLine();
                     }
+
+                    redisService.cerrarSesion(String.valueOf(doc));
                 }
             } else {
                 System.out.println();

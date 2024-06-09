@@ -36,7 +36,7 @@ public class MongoService {
     }
 
     public Usuario recuperarUsuario(String documento) {
-        Bson filter = Filters.eq("documento", documento);
+        Bson filter = Filters.eq("dni", documento);
         FindIterable<Usuario> elementsFound = this.coleccionUsuarios.find(filter);
         for (Usuario usuario : elementsFound)
             return usuario;
@@ -97,7 +97,6 @@ public class MongoService {
         }
 
         System.out.println("\nPresione Enter para continuar...");
-        sc.nextLine();
         sc.nextLine();
     }
 
@@ -199,7 +198,7 @@ public class MongoService {
 
     public void generarPedido(String idUsuario) {
         Pedido pedido = new Pedido();
-        pedido.setIdPedido(++Pedido.contadorId);
+        pedido.setIdPedido((int) (Math.random() * 10000));
 
         Usuario usuario = recuperarUsuario(idUsuario);
         pedido.setUsuario(usuario);
@@ -288,6 +287,7 @@ public class MongoService {
         factura.setMonto(montoFactura);
 
         this.coleccionFacturas.insertOne(factura);
+        cassandraService.logFactura(factura);
     }
 
     public void pagarFactura(){
