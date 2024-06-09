@@ -103,7 +103,12 @@ public class App {
                     System.out.print("\nIngrese una opción: ");
                     int opcionAdmin = sc.nextInt();
 
+                    List<Integer> opciones = Arrays.asList(1, 2, 3, 4, 5, 6, 0);
                     while (opcionAdmin != 0) {
+                        while (!opciones.contains(opcionAdmin)) {
+                            System.out.print("Opcion no valida. Vuelva a intentar: ");
+                            opcionAdmin = sc.nextInt();
+                        }
                         switch (opcionAdmin) {
                             case 1:
                                 mongoService.recuperarCatalogo();
