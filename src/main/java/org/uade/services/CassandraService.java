@@ -6,9 +6,9 @@ import com.datastax.driver.core.Session;
 import org.uade.connections.CassandraDB;
 import org.uade.exceptions.CassandraConnectionException;
 import org.uade.models.Factura;
-import org.uade.models.Pedido;
 import org.uade.models.Producto;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 public class CassandraService {
@@ -95,21 +95,29 @@ public class CassandraService {
                 + "idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
                 " monto float, PRIMARY KEY (idLog, fecha_hora))");
 
-        Pedido pedidoReferencia = mongoService.recuperarPedido(factura.getIdPedido());
-
         String operador;
-        if (factura.getFormaPago().equals("efectivo")) {
+        if (factura.getFormaPago().equals("EFECTIVO")) {
             operador = "Empleado delivery (contra entrega)";
-        } else if (factura.getFormaPago().equals("punto_retiro")) {
+        } else if (factura.getFormaPago().equals("PUNTO_RETIRO")) {
             operador = "Empleado local";
         } else {
             operador = null;
         }
-        String cqlStatement = "INSERT INTO logFacturas(idLog, idFactura, idPedidoReferencia, , " +
-                "facturaPagada, formaPago, operador, fecha_hora, monto) VALUES (uuid(), " + factura.getIdFactura()
-                + ", " + factura.getIdPedido() + ", " + pedidoReferencia.getUsuario().getDni()
-                + ", " + factura.isFacturaPagada() + ", " + factura.getFormaPago() + ", " + operador
-                + ", toTimestamp(now()), " + factura.getMonto() + ")";
+
+        LocalDateTime fecha_hora_actual = LocalDateTime.now();
+
+        String cqlStatement = String.format(Locale.US, "INSERT INTO logFacturas (idLog, idFactura, idPedidoReferencia, idUsuario, " +
+                        "facturaPagada, formaPago, operador, fecha_hora, monto) VALUES (uuid(), %d, %d, '%s', '%s', '%s', " +
+                        "'%s', '%s', %.2f",
+                factura.getIdFactura(),
+                factura.getIdPedido(),
+                factura.getIdUsuario(),
+                factura.isFacturaPagada(),
+                factura.getFormaPago(),
+                operador,
+                fecha_hora_actual,
+                factura.getMonto()
+        );
 
         session.execute(cqlStatement);
     }
@@ -146,4 +154,4 @@ public class CassandraService {
     public void close() {
         cassandraDB.close();
     }
- }
+}

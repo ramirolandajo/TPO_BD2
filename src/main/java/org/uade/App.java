@@ -149,12 +149,14 @@ public class App {
                     redisService.iniciarSesion(String.valueOf(doc));
                     System.out.println("Bienvenido al menú de Cliente");
                     System.out.println("\n1.- Ver productos");
-                    System.out.println("2.- Agregar producto al carrito");
-                    System.out.println("3.- Eliminar producto del carrito");
-                    System.out.println("4.- Modificar cantidad producto del carrito");
-                    System.out.println("5.- Confirmar carrito (generar pedido)");
-                    System.out.println("6.- Ver facturas");
-                    System.out.println("7.- Pagar factura");
+                    System.out.println("2.- Ver carrito");
+                    System.out.println("3.- Agregar producto al carrito");
+                    System.out.println("4.- Eliminar producto del carrito");
+                    System.out.println("5.- Modificar cantidad producto del carrito");
+                    System.out.println("6.- Volver al estado del carrito anterior");
+                    System.out.println("7.- Confirmar carrito (generar pedido)");
+                    System.out.println("8.- Ver facturas");
+                    System.out.println("9.- Pagar factura");
                     System.out.println("0.- SALIR");
 
                     System.out.print("\nIngrese una opción: ");
@@ -171,21 +173,27 @@ public class App {
                                 mongoService.recuperarCatalogo();
                                 break;
                             case 2:
-                                redisService.agregarProductoCarrito(String.valueOf(doc));
+                                redisService.mostrarCarrito(String.valueOf(doc));
                                 break;
                             case 3:
-                                redisService.eliminarProductoCarrito(String.valueOf(doc));
+                                redisService.agregarProductoCarrito(String.valueOf(doc));
                                 break;
                             case 4:
-                                redisService.modificarCantidadProductoCarrito(String.valueOf(doc));
+                                redisService.eliminarProductoCarrito(String.valueOf(doc));
                                 break;
                             case 5:
-                                System.out.println();
+                                redisService.modificarCantidadProductoCarrito(String.valueOf(doc));
                                 break;
                             case 6:
-                                mongoService.recuperarFacturasUsuario(String.valueOf(doc));
+                                redisService.undoEstadoCarrito(String.valueOf(doc));
                                 break;
                             case 7:
+                                mongoService.generarPedido(String.valueOf(doc));
+                                break;
+                            case 8:
+                                mongoService.recuperarFacturasUsuario(String.valueOf(doc));
+                                break;
+                            case 9:
                                 mongoService.pagarFactura();
                                 break;
                             case 0:
@@ -196,16 +204,19 @@ public class App {
                         }
 
                         System.out.println("\n1.- Ver productos");
-                        System.out.println("2.- Agregar producto al carrito");
-                        System.out.println("3.- Eliminar producto del carrito");
-                        System.out.println("4.- Modificar cantidad producto del carrito");
-                        System.out.println("5.- Confirmar carrito (generar pedido)");
-                        System.out.println("6.- Ver facturas");
-                        System.out.println("7.- Pagar factura");
+                        System.out.println("2.- Ver carrito");
+                        System.out.println("3.- Agregar producto al carrito");
+                        System.out.println("4.- Eliminar producto del carrito");
+                        System.out.println("5.- Modificar cantidad producto del carrito");
+                        System.out.println("6.- Volver al estado del carrito anterior");
+                        System.out.println("7.- Confirmar carrito (generar pedido)");
+                        System.out.println("8.- Ver facturas");
+                        System.out.println("9.- Pagar factura");
                         System.out.println("0.- SALIR");
 
                         System.out.print("\nIngrese una opción: ");
                         opcionCliente = sc.nextInt();
+                        sc.nextLine();
                     }
                 }
             } else {

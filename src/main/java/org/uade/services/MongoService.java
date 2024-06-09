@@ -220,6 +220,7 @@ public class MongoService {
         pedido.setProductos(itemsCarrito);
 
         this.coleccionPedidos.insertOne(pedido);
+        redisService.vaciarCarrito(idUsuario);
         System.out.println("Pedido generado con éxito!");
 
         // Generamos la factura del pedido
