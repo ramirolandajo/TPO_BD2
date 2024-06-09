@@ -137,11 +137,12 @@ public class MongoService {
         if (impuestoIVA != 0) {
             updates.add(Updates.set("impuestoIVA", impuestoIVA));
         }
-        if (imagen != null && imagen.isEmpty()) {
+        if (imagen != null && !imagen.isEmpty()) {
             updates.add(Updates.set("imagen", imagen));
         }
 
-        if(!(descripcion == null || descripcion.isEmpty()) || !inputPrecio.isEmpty() || !inputDescuento.isEmpty() || !inputIVA.isEmpty() || !(imagen == null || imagen.isEmpty())){
+        if(!(descripcion == null || descripcion.isEmpty()) || !inputPrecio.isEmpty() || !inputDescuento.isEmpty() ||
+                !inputIVA.isEmpty() || !(imagen == null || imagen.isEmpty())){
             System.out.print("Ingrese el tipo de cambio: ");
             String tipoCambio = sc.nextLine();
 
@@ -152,7 +153,9 @@ public class MongoService {
             sc.nextLine();
 
             // Se recupera el producto antes de actualizarlo.
-            Producto productoViejo = recuperarProducto(filter);
+            Producto producto = recuperarProducto(filter);
+            Producto productoViejo = new Producto(producto.getIdProducto(), producto.getDescripcion(),
+                    producto.getPrecio(), producto.getDescuento(), producto.getImpuestoIVA(), producto.getImagen());
 
             // Actualizamos el documento en mongo
             this.coleccionProductos.updateOne(filter, updates);

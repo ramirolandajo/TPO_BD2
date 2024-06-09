@@ -38,13 +38,13 @@ public class MongoDB {
 
 
             MongoDatabase db = mongoClient.getDatabase("tpo-bd2").withCodecRegistry(pojoCodecRegistry);
-                if (!db.listCollectionNames().into(new ArrayList<>()).contains("Productos")) {
-                    db.createCollection("Productos");
-                    db.createCollection("Usuarios");
-                    db.createCollection("Pedidos");
-                    db.createCollection("Facturas");
-                }
-                return db;
+            if (!db.listCollectionNames().into(new ArrayList<>()).contains("Productos")) {
+                db.createCollection("Productos");
+                db.createCollection("Usuarios");
+                db.createCollection("Pedidos");
+                db.createCollection("Facturas");
+            }
+            return db;
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
