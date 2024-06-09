@@ -9,6 +9,8 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.uade.exceptions.MongoConnectionException;
 
+import java.util.ArrayList;
+
 public class MongoDB {
 
     private static MongoDB instancia;
@@ -36,11 +38,13 @@ public class MongoDB {
 
 
             MongoDatabase db = mongoClient.getDatabase("tpo-bd2").withCodecRegistry(pojoCodecRegistry);
-            db.createCollection("Productos");
-            db.createCollection("Usuarios");
-            db.createCollection("Pedidos");
-            db.createCollection("Facturas");
-            return db;
+                if (!db.listCollectionNames().into(new ArrayList<>()).contains("Productos")) {
+                    db.createCollection("Productos");
+                    db.createCollection("Usuarios");
+                    db.createCollection("Pedidos");
+                    db.createCollection("Facturas");
+                }
+                return db;
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

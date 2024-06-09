@@ -87,7 +87,6 @@ public class App {
                 while (doc < 1) {
                     System.out.println("Número no válido. Ingrese un número positivo!");
                     doc = sc.nextInt();
-
                 }
                 // Opciones Administrador
                 if (doc == 1) {
@@ -107,8 +106,6 @@ public class App {
                         switch (opcionAdmin) {
                             case 1:
                                 mongoService.recuperarCatalogo();
-                                sc.nextLine();
-                                sc.nextLine();
                                 break;
                             case 2:
                                 System.out.print("Ingrese el producto que desea actualizar: ");
@@ -123,8 +120,9 @@ public class App {
                                 break;
                             case 5:
                                 cassandraService.verLogFacturas();
+                                break;
                         }
-                        System.out.println("Bienvenido al menú de Administrador!");
+
                         System.out.println("\n1.- Ver productos");
                         System.out.println("2.- Modificar producto");
                         System.out.println("3.- Agregar producto al catálogo");

@@ -15,7 +15,6 @@ public class MongoService {
     private MongoCollection<Usuario> coleccionUsuarios;
     private MongoCollection<Pedido> coleccionPedidos;
     private MongoCollection<Factura> coleccionFacturas;
-
     private CassandraService cassandraService;
     private RedisService redisService ;
 
@@ -87,24 +86,40 @@ public class MongoService {
                     p.getIdProducto(), p.getDescripcion(), p.getPrecio(), p.getImpuestoIVA(), p.getDescuento(),
                     p.getImagen());
         }
+
+        System.out.println("\nPresione Enter para continuar...");
+        sc.nextLine();
+        sc.nextLine();
     }
 
     public void actualizarProducto(int id) {
 
         System.out.println("Ingrese los datos a actualizar: ");
-        System.out.println("\nDescripción: ");
+        System.out.print("\nDescripción: ");
         String descripcion = sc.nextLine();
 
-        System.out.println("Precio: ");
-        float precio = sc.nextFloat();
+        System.out.print("Precio: ");
+        String inputPrecio = sc.nextLine();
+        float precio = 0;
 
-        System.out.println("Descuento: ");
-        float descuento = sc.nextFloat();
+        if(!inputPrecio.isEmpty())
+            precio = Float.parseFloat(inputPrecio);
 
-        System.out.println("Impuesto de IVA: ");
-        float impuestoIVA = sc.nextFloat();
+        System.out.print("Descuento: ");
+        String inputDescuento = sc.nextLine();
+        float descuento = 0;
 
-        System.out.println("Imagen: ");
+        if(!inputDescuento.isEmpty())
+            descuento = Float.parseFloat(inputDescuento);
+
+        System.out.print("Impuesto de IVA: ");
+        String inputIVA = sc.nextLine();
+        float impuestoIVA = 0;
+
+        if(!inputIVA.isEmpty())
+            impuestoIVA = Float.parseFloat(inputIVA);
+
+        System.out.print("Imagen: ");
         String imagen = sc.nextLine();
 
         Bson filter = Filters.eq("idProducto", id);
@@ -126,28 +141,33 @@ public class MongoService {
             updates.add(Updates.set("imagen", imagen));
         }
 
-        // Se recupera el producto antes de actualizarlo.
-        Producto productoViejo = recuperarProducto(filter);
+        if(!(descripcion == null || descripcion.isEmpty()) || !inputPrecio.isEmpty() || !inputDescuento.isEmpty() || !inputIVA.isEmpty() || !(imagen == null || imagen.isEmpty())){
+            System.out.print("Ingrese el tipo de cambio: ");
+            String tipoCambio = sc.nextLine();
 
-        // Actualizamos el documento en mongo
-        this.coleccionProductos.updateOne(filter, updates);
+            // Chequear si el operador lo pasamos a String para indicar el rol
+            System.out.print("Ingrese el operador a cargo: ");
+            // (cajero, delivery, etc.) o lo dejamos con Id.
+            int idOperador = sc.nextInt();
+            sc.nextLine();
 
-        // Se recupera el producto actualizado para imprimirlo.
-        Producto productoActualizado = recuperarProducto(filter);
+            // Se recupera el producto antes de actualizarlo.
+            Producto productoViejo = recuperarProducto(filter);
 
-        System.out.println("Ingrese el tipo de cambio: ");
-        String tipoCambio = sc.nextLine();
+            // Actualizamos el documento en mongo
+            this.coleccionProductos.updateOne(filter, updates);
 
-        // Chequear si el operador lo pasamos a String para indicar el rol
-        System.out.println("Ingrese el operador a cargo: ");
-        // (cajero, delivery, etc.) o lo dejamos con Id.
-        int idOperador = sc.nextInt();
+            // Se recupera el producto actualizado para imprimirlo.
+            Producto productoActualizado = recuperarProducto(filter);
+            // Se logea el cambio del catálogo en Cassandra.
+            cassandraService.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
 
-        // Se logea el cambio del catálogo en Cassandra.
-        cassandraService.logCambiosProducto(productoViejo, productoActualizado, tipoCambio, idOperador);
-
-        System.out.println("Producto actualizado!");
-        System.out.println(productoActualizado.getIdProducto() + " " + productoActualizado.getDescripcion() + " " + productoActualizado.getPrecio() + " " + productoActualizado.getImpuestoIVA() + " " + productoActualizado.getDescuento() + " " + productoActualizado.getImagen());
+            System.out.println("Producto actualizado!");
+            System.out.println(productoActualizado.getIdProducto() + " " + productoActualizado.getDescripcion() + " " + productoActualizado.getPrecio() + " " + productoActualizado.getImpuestoIVA() + " " + productoActualizado.getDescuento() + " " + productoActualizado.getImagen());
+        }else {
+            System.out.println("\nSe debe llenar algun campo para actualizar el producto!. No se ha realizado ningún cambio.");
+            System.out.println();
+        }
     }
 
     public void generarPedido(String idUsuario) throws MongoConnectionException, CassandraConnectionException, RedisConnectionException {
@@ -188,7 +208,7 @@ public class MongoService {
         return null;
     }
 
-    public void generarFactura(Pedido pedido, float totalIVA) throws MongoConnectionException, CassandraConnectionException {
+    public void generarFactura(Pedido pedido, float totalIVA) {
         // le pide directamente el medio de pago aunque sea que acaba de confirmar el carrito?
         System.out.println("Ingrese el medio de pago: ");
         System.out.println("1. Para abonar en efectivo");
@@ -277,9 +297,11 @@ public class MongoService {
     }
 
     public void recuperarFacturasUsuario(String idUsuario) {
-        Iterable<Factura> facturas = this.coleccionFacturas.find();
+        Bson filter = Filters.eq("idUsuario", idUsuario);
+
+        Iterable<Factura> facturas = this.coleccionFacturas.find(filter);
         for (Factura fac : facturas) {
-            System.out.println(fac.getIdFactura() + " " + fac.isFacturaPagada() + " " + fac.getFormaPago());
+            System.out.printf("%d %d %s %b %s %f", fac.getIdFactura(), fac.getIdPedido(), fac.getIdUsuario(), fac.isFacturaPagada(), fac.getFormaPago(), fac.getMonto());
             System.out.println();
         }
     }

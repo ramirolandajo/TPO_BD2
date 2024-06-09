@@ -3,10 +3,11 @@ package org.uade.services;
 import com.datastax.driver.core.Session;
 import org.uade.connections.CassandraDB;
 import org.uade.exceptions.CassandraConnectionException;
-import org.uade.exceptions.MongoConnectionException;
 import org.uade.models.Factura;
 import org.uade.models.Pedido;
 import org.uade.models.Producto;
+
+import java.util.UUID;
 
 public class CassandraService {
 
@@ -25,13 +26,14 @@ public class CassandraService {
         session.execute("CREATE TABLE IF NOT EXISTS logCambiosProductos(idLog uuid, idProducto int, " +
                 "descripcionVieja text, precioViejo float, descuentoViejo float, impuestoIvaViejo float, imagenVieja text, " +
                 "comentariosViejos text, descripcionNueva text, precioNuevo float, descuentoNuevo float, impuestoIvaNuevo" +
-                " float, imagenNueva text, comentariosNuevos text, tipoCambio text, operador int)");
+                " float, imagenNueva text, comentariosNuevos text, tipoCambio text, operador int, primary key(idProducto, idLog))");
+        //UUID idLog = UUID.randomUUID();
 
-        String cqlStatement = "INSERT INTO TABLE logCambiosProductos(idLog, idProducto int, "
-                + "descripcionVieja text, precioViejo float, descuentoViejo float, impuestoIvaViejo float, imagenVieja text, "
-                + "comentariosViejos text, descripcionNueva text, precioNuevo float, descuentoNuevo float, impuestoIvaNuevo"
-                + " float, imagenNueva text, comentariosNuevos text, tipoCambio text, operador int)" +
-                "VALUES (uuid(), " + productoViejo.getIdProducto() + ", " + productoViejo.getDescripcion() + ", " +
+        String cqlStatement = "INSERT INTO logCambiosProductos(idLog, idProducto, "
+                + "descripcionVieja, precioViejo, descuentoViejo, impuestoIvaViejo, imagenVieja, "
+                + "comentariosViejos, descripcionNueva, precioNuevo, descuentoNuevo, impuestoIvaNuevo"
+                + ", imagenNueva, comentariosNuevos, tipoCambio, operador)" +
+                "VALUES (uuid()" + productoViejo.getIdProducto() + ", " + productoViejo.getDescripcion() + ", " +
                 productoViejo.getPrecio() + ", " + productoViejo.getDescuento() + ", " + productoViejo.getImpuestoIVA()
                 + ", " + productoViejo.getImagen() + ", " + ", " + productoNuevo.getDescripcion()
                 + ", " + productoNuevo.getPrecio() + ", " + productoNuevo.getDescuento() + ", " + productoNuevo.getImpuestoIVA()
