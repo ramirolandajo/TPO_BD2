@@ -59,12 +59,12 @@ public class RedisService {
         String idUsuario = sc.nextLine();
 
         while ((Integer.parseInt(idUsuario) != -1) && (mongoService.recuperarUsuario(idUsuario) == null)) {
-            System.out.print("El usurio con el documento " + idUsuario + " no existe! Intente de nuevo: ");
+            System.out.print("El usuario con el documento " + idUsuario + " no existe! Intente de nuevo: ");
             idUsuario = sc.nextLine();
         }
 
         if(Integer.parseInt(idUsuario) != -1) {
-            System.out.println("Actividad del usurio: " + this.database.hget("usuario:" + idUsuario, "categorizacion"));
+            System.out.println("Actividad del usuario: " + this.database.hget("usuario:" + idUsuario, "categorizacion"));
             sc.nextLine();
         }
     }

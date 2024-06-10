@@ -36,7 +36,6 @@ public class App {
         System.out.println("2. Ingresar a la aplicación");
         System.out.println("3. Salir de la aplicacion");
         int opcion = sc.nextInt();
-        sc.nextLine();
 
         while (opcion != 1 && opcion != 2 && opcion != 3) {
             System.out.println("La opción ingresada no es válida");
@@ -61,10 +60,12 @@ public class App {
                 System.out.println("Ingrese 1. si es EMPRESA");
                 System.out.println("Ingrese 2. si es INDIVIDUO");
                 int tipoUsuarioInt = sc.nextInt();
+                sc.nextLine();
                 String tipoUsuario;
                 while (tipoUsuarioInt != 1 && tipoUsuarioInt != 2) {
                     System.out.println("Opcion no valida. Ingrese una opcion valida.");
                     tipoUsuarioInt = sc.nextInt();
+                    sc.nextLine();
                 }
                 if (tipoUsuarioInt == 1) {
                     tipoUsuario = "EMPRESA";

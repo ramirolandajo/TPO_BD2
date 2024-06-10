@@ -17,6 +17,15 @@ public class CassandraDB {
 
             session.execute("CREATE KEYSPACE IF NOT EXISTS tpo_bd2 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
             session.execute("USE tpo_bd2");
+
+            session.execute("CREATE TABLE IF NOT EXISTS logCambiosProductos(idLog uuid, idProducto int, " +
+                    "descripcionVieja text, precioViejo float, descuentoViejo float, impuestoIvaViejo float, imagenVieja text, " +
+                    "descripcionNueva text, precioNuevo float, descuentoNuevo float, impuestoIvaNuevo float, imagenNueva text, " +
+                    "tipoCambio text, operador int, PRIMARY KEY(idProducto, idLog))");
+
+            session.execute("CREATE TABLE IF NOT EXISTS logFacturas(idLog uuid, idFactura int, idPedidoReferencia int, "
+                    + "idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
+                    " monto float, PRIMARY KEY (idLog, fecha_hora))");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

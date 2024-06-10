@@ -26,11 +26,6 @@ public class CassandraService {
     }
 
     public void logCambiosProducto(Producto productoViejo, Producto productoNuevo, String tipoCambio, int operador) {
-        session.execute("CREATE TABLE IF NOT EXISTS logCambiosProductos(idLog uuid, idProducto int, " +
-                "descripcionVieja text, precioViejo float, descuentoViejo float, impuestoIvaViejo float, imagenVieja text, " +
-                "descripcionNueva text, precioNuevo float, descuentoNuevo float, impuestoIvaNuevo float, imagenNueva text, " +
-                "tipoCambio text, operador int, PRIMARY KEY(idProducto, idLog))");
-
         String cqlStatement = String.format(Locale.US,
                 "INSERT INTO logCambiosProductos(idLog, idProducto, descripcionVieja, precioViejo, descuentoViejo, " +
                         "impuestoIvaViejo, imagenVieja, descripcionNueva, precioNuevo, descuentoNuevo, impuestoIvaNuevo, " +
@@ -88,14 +83,10 @@ public class CassandraService {
         }
 
 // Imprime el resultado formateado
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     public void logFactura(Factura factura) {
-        session.execute("CREATE TABLE IF NOT EXISTS logFacturas(idLog uuid, idFactura int, idPedidoReferencia int, "
-                + "idUsuario text, facturaPagada boolean, formaPago text, operador text, fecha_hora timestamp," +
-                " monto float, PRIMARY KEY (idLog, fecha_hora))");
-
         String operador;
         if (factura.getFormaPago() != null) {
             if (factura.getFormaPago().equals("EFECTIVO")) {
